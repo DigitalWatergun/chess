@@ -2,6 +2,8 @@ import pygame
 import sys
 import os
 
+from engine.chess_engine import check_valid
+
 # Window settings
 WIDTH, HEIGHT = 480, 480
 SQUARE_SIZE = WIDTH // 8
@@ -78,8 +80,10 @@ def main():
             elif event.type == pygame.MOUSEBUTTONUP:
                 if selected_piece is not None:
                     row, col = mouse_y // SQUARE_SIZE, mouse_x // SQUARE_SIZE
-                    # Drop piece (no legality check yet)
-                    board[row][col] = selected_piece
+                    if check_valid(board, selected_piece, selected_piece_pos, (row, col)):
+                        board[row][col] = selected_piece
+                    else: 
+                        board[selected_piece_pos[0]][selected_piece_pos[1]] = selected_piece
                     selected_piece = None
                     selected_piece_pos = None
 
