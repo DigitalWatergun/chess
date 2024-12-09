@@ -42,3 +42,10 @@ def check_king_moves(selected_piece_pos, dest_piece_pos):
             return True
     
     return False
+
+
+def check_bishop_moves(selected_piece_pos, dest_piece_pos): 
+    start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
+    end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+
+    return abs(end_row - start_row) == abs(end_col - start_col)
