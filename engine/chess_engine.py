@@ -11,6 +11,9 @@ def check_valid(board, selected_piece, selected_piece_pos, dest_piece_pos):
     if selected_piece[1] == 'R':
         return valid_moves.check_rook_moves(selected_piece_pos, dest_piece_pos)
     
+    if selected_piece[1] == 'N':
+        return valid_moves.check_knight_moves(selected_piece_pos, dest_piece_pos) 
+    
     if selected_piece[1] == 'B':
         return valid_moves.check_bishop_moves(selected_piece_pos, dest_piece_pos)
     

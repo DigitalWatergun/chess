@@ -30,6 +30,19 @@ def check_rook_moves(selected_piece_pos, dest_piece_pos):
     
     return False
 
+def check_knight_moves(selected_piece_pos, dest_piece_pos): 
+    start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
+    end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+
+    directions = [[-2, 1], [-2, -1], [-1, 2], [-1, -2], [2, 1], [2, -1], [1, -2], [1, 2]]
+    
+    for dr, dc in directions: 
+        if start_row + dr == end_row and start_col + dc == end_col: 
+            return True
+    
+    return False 
+
+
 def check_bishop_moves(selected_piece_pos, dest_piece_pos): 
     start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
     end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
