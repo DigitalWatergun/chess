@@ -6,7 +6,7 @@ def check_valid(board, selected_piece, selected_piece_pos, dest_piece_pos):
         return False
     
     if selected_piece[1] == 'P':  
-        return valid_moves.check_pawn_moves(selected_piece, selected_piece_pos, dest_piece_pos)
+        return valid_moves.check_pawn_moves(board, selected_piece, selected_piece_pos, dest_piece_pos)
     
     if selected_piece[1] == 'R':
         return valid_moves.check_rook_moves(selected_piece_pos, dest_piece_pos)
