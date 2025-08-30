@@ -14,15 +14,15 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
 
 piece_images = {}
-colors = ['w', 'b']
-piece_types = ['K', 'Q', 'R', 'B', 'N', 'P']
+colors = ["w", "b"]
+piece_types = ["K", "Q", "R", "B", "N", "P"]
 
-# Load piece images and store in a dict 
+# Load piece images and store in a dict
 for c in colors:
     for p in piece_types:
         piece_code = c + p
         filename = f"{piece_code}.png"
-        path = os.path.join("assets", "pieces", filename)
+        path = os.path.join("src", "assets", "pieces", filename)
         if os.path.exists(path):
             img = pygame.image.load(path)
             img = pygame.transform.smoothscale(img, (SQUARE_SIZE, SQUARE_SIZE))
@@ -32,27 +32,31 @@ for c in colors:
 
 # Define initial board layout
 board = [
-    ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
-    ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
+    ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+    ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
     [None, None, None, None, None, None, None, None],
     [None, None, None, None, None, None, None, None],
     [None, None, None, None, None, None, None, None],
     [None, None, None, None, None, None, None, None],
-    ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
-    ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']
+    ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
+    ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
 ]
+
 
 def draw_board(surface, board):
     colors = [(240, 217, 181), (181, 136, 99)]  # light, dark squares
     for r in range(8):
         for c in range(8):
             color = colors[(r + c) % 2]
-            rect = pygame.Rect(c * SQUARE_SIZE, r * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+            rect = pygame.Rect(
+                c * SQUARE_SIZE, r * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE
+            )
             pygame.draw.rect(surface, color, rect)
-            
+
             piece = board[r][c]
             if piece is not None:
                 surface.blit(piece_images[piece], (c * SQUARE_SIZE, r * SQUARE_SIZE))
+
 
 def main():
     clock = pygame.time.Clock()
@@ -67,7 +71,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-            # Mouse Drag and Drop 
+            # Mouse Drag and Drop
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 row, col = pos[1] // SQUARE_SIZE, pos[0] // SQUARE_SIZE
@@ -80,10 +84,15 @@ def main():
             elif event.type == pygame.MOUSEBUTTONUP:
                 if selected_piece is not None:
                     row, col = mouse_y // SQUARE_SIZE, mouse_x // SQUARE_SIZE
-                    if check_valid(board, selected_piece, selected_piece_pos, (row, col)):
+                    if check_valid(
+                        board, selected_piece, selected_piece_pos, (row, col)
+                    ):
                         board[row][col] = selected_piece
-                    else: 
-                        board[selected_piece_pos[0]][selected_piece_pos[1]] = selected_piece
+                    else:
+                        if selected_piece_pos is not None:
+                            board[selected_piece_pos[0]][
+                                selected_piece_pos[1]
+                            ] = selected_piece
                     selected_piece = None
                     selected_piece_pos = None
 
@@ -101,6 +110,7 @@ def main():
 
     pygame.quit()
     sys.exit()
+
 
 if __name__ == "__main__":
     main()

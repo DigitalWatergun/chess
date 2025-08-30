@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chess"
+version = "1.0.0"
+description = "A chess game implementation"
+requires-python = ">=3.13"
+dependencies = [
+    "pygame",
+]
+
+[project.optional-dependencies]
+dev = []
