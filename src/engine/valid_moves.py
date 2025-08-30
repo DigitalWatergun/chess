@@ -1,6 +1,7 @@
 def check_pawn_moves(board, selected_piece, selected_piece_pos, dest_piece_pos):
     start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
     end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+    end_piece = board[end_row][end_col]
 
     if selected_piece == "wP":
         direction = -1
@@ -9,7 +10,17 @@ def check_pawn_moves(board, selected_piece, selected_piece_pos, dest_piece_pos):
         direction = 1
         initial_pos = 1
 
-    if start_col == end_col and board[end_row][end_col] is None:
+    col_diff = abs(end_col - start_col)
+    row_diff = end_row - start_row
+
+    if (
+        col_diff == 1
+        and row_diff == direction
+        and end_piece is not None
+        and end_piece != selected_piece
+    ):
+        return True
+    elif col_diff == 0 and end_piece is None:
         if (initial_pos == start_row and end_row == start_row + (2 * direction)) or (
             end_row == start_row + direction
         ):
