@@ -7,7 +7,7 @@ BOARD_SIZE = 8
 SQUARE_SIZE = WIDTH // BOARD_SIZE  # 60
 
 # Colors (RGB tuples)
-COLORS = {"light_square": (240, 217, 181), "dark_square": (181, 136, 99)}
+COLORS = {"light_square": (122, 133, 147), "dark_square": (45, 53, 65)}
 
 # Game settings
 FPS = 120
@@ -31,4 +31,3 @@ INITIAL_BOARD = [
     ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
     ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
 ]
-
