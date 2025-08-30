@@ -1,10 +1,10 @@
 # Game configuration constants
 
 # Window settings
-WIDTH = 480
-HEIGHT = 480
+WIDTH = 800
+HEIGHT = 800
 BOARD_SIZE = 8
-SQUARE_SIZE = WIDTH // BOARD_SIZE  # 60
+SQUARE_SIZE = WIDTH // BOARD_SIZE  # 100
 
 # Colors (RGB tuples)
 COLORS = {"light_square": (122, 133, 147), "dark_square": (45, 53, 65)}
