@@ -9,6 +9,12 @@ from engine.chess_engine import check_valid
 board = [row[:] for row in INITIAL_BOARD]
 
 
+def return_piece_to_original_position(board, piece, piece_pos):
+    """Helper function to return a piece to its original position."""
+    if piece_pos is not None:
+        board[piece_pos[0]][piece_pos[1]] = piece
+
+
 def main():
     try:
         # Initialize pygame
@@ -49,34 +55,29 @@ def main():
                     if selected_piece is not None:
                         try:
                             row, col = mouse_y // SQUARE_SIZE, mouse_x // SQUARE_SIZE
-                            # Bounds checking
-                            if 0 <= row < BOARD_SIZE and 0 <= col < BOARD_SIZE:
-                                if check_valid(
+                            # Check bounds AND validity together
+                            if (
+                                0 <= row < BOARD_SIZE
+                                and 0 <= col < BOARD_SIZE
+                                and check_valid(
                                     board,
                                     selected_piece,
                                     selected_piece_pos,
                                     (row, col),
-                                ):
-                                    board[row][col] = selected_piece
-                                else:
-                                    # Return piece to original position
-                                    if selected_piece_pos is not None:
-                                        board[selected_piece_pos[0]][
-                                            selected_piece_pos[1]
-                                        ] = selected_piece
+                                )
+                            ):
+                                board[row][col] = selected_piece
                             else:
-                                # Out of bounds - return piece to original position
-                                if selected_piece_pos is not None:
-                                    board[selected_piece_pos[0]][
-                                        selected_piece_pos[1]
-                                    ] = selected_piece
+                                # Return piece to original position (handles both out-of-bounds and invalid moves)
+                                return_piece_to_original_position(
+                                    board, selected_piece, selected_piece_pos
+                                )
                         except (IndexError, TypeError, ZeroDivisionError) as e:
                             print(f"Invalid mouse release position: {e}")
                             # Return piece to original position on error
-                            if selected_piece_pos is not None:
-                                board[selected_piece_pos[0]][
-                                    selected_piece_pos[1]
-                                ] = selected_piece
+                            return_piece_to_original_position(
+                                board, selected_piece, selected_piece_pos
+                            )
                         finally:
                             selected_piece = None
                             selected_piece_pos = None
