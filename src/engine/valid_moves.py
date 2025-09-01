@@ -13,6 +13,7 @@ def check_pawn_moves(board, selected_piece, selected_piece_pos, dest_piece_pos):
     col_diff = abs(end_col - start_col)
     row_diff = end_row - start_row
 
+    # Check if diagonal capture movement
     if (
         col_diff == 1
         and row_diff == direction
@@ -20,6 +21,7 @@ def check_pawn_moves(board, selected_piece, selected_piece_pos, dest_piece_pos):
         and end_piece != selected_piece
     ):
         return True
+    # Check if vertical piece movement
     elif col_diff == 0 and end_piece is None:
         if (initial_pos == start_row and end_row == start_row + (2 * direction)) or (
             end_row == start_row + direction
@@ -29,11 +31,14 @@ def check_pawn_moves(board, selected_piece, selected_piece_pos, dest_piece_pos):
     return False
 
 
-def check_rook_moves(selected_piece_pos, dest_piece_pos):
+def check_rook_moves(board, selected_piece, selected_piece_pos, dest_piece_pos):
     start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
     end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+    end_piece = board[end_row][end_col]
 
-    if start_row != end_row and start_col == end_col:
+    if end_piece and end_piece[0] == selected_piece[0]:
+        return False
+    elif start_row != end_row and start_col == end_col:
         return True
     elif start_row == end_row and start_col != end_col:
         return True
