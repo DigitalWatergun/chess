@@ -1,18 +1,9 @@
 import pygame
 import sys
 
-from startup import load_piece_images, draw_board, init_pygame
-from config import WIDTH, HEIGHT, BOARD_SIZE, SQUARE_SIZE, FPS, INITIAL_BOARD
-from engine.chess_engine import check_valid
-
-# Create a copy of the initial board for the game
-board = [row[:] for row in INITIAL_BOARD]
-
-
-def return_piece_to_original_position(board, piece, piece_pos):
-    """Helper function to return a piece to its original position."""
-    if piece_pos is not None:
-        board[piece_pos[0]][piece_pos[1]] = piece
+from src.startup import load_piece_images, draw_board, init_pygame
+from src.config import WIDTH, HEIGHT, SQUARE_SIZE, FPS
+from src.engine.chess_engine import ChessEngine
 
 
 def main():
@@ -23,10 +14,11 @@ def main():
         # Load piece images
         piece_images = load_piece_images(SQUARE_SIZE)
 
+        # Initialize chess game
+        game = ChessEngine()
+
         clock = pygame.time.Clock()
         running = True
-        selected_piece = None
-        selected_piece_pos = None
         mouse_x, mouse_y = 0, 0
 
         while running:
@@ -41,67 +33,40 @@ def main():
                     pos = pygame.mouse.get_pos()
                     try:
                         row, col = pos[1] // SQUARE_SIZE, pos[0] // SQUARE_SIZE
-                        # Bounds checking
-                        if 0 <= row < BOARD_SIZE and 0 <= col < BOARD_SIZE:
-                            if board[row][col] is not None:
-                                selected_piece = board[row][col]
-                                selected_piece_pos = (row, col)
-                                board[row][col] = None
+                        game.select_piece(row, col)
                     except (IndexError, TypeError, ZeroDivisionError) as e:
                         print(f"Invalid mouse click position: {e}")
                 elif event.type == pygame.MOUSEMOTION:
                     mouse_x, mouse_y = event.pos
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    if selected_piece is not None:
+                    if game.game_state.has_selected_piece():
                         try:
                             row, col = mouse_y // SQUARE_SIZE, mouse_x // SQUARE_SIZE
-                            # Check bounds AND validity together
-                            if (
-                                0 <= row < BOARD_SIZE
-                                and 0 <= col < BOARD_SIZE
-                                and check_valid(
-                                    board,
-                                    selected_piece,
-                                    selected_piece_pos,
-                                    (row, col),
-                                )
-                            ):
-                                board[row][col] = selected_piece
-                            else:
-                                # Return piece to original position (handles both out-of-bounds and invalid moves)
-                                return_piece_to_original_position(
-                                    board, selected_piece, selected_piece_pos
-                                )
+                            game.make_move(row, col)
                         except (IndexError, TypeError, ZeroDivisionError) as e:
                             print(f"Invalid mouse release position: {e}")
-                            # Return piece to original position on error
-                            return_piece_to_original_position(
-                                board, selected_piece, selected_piece_pos
-                            )
-                        finally:
-                            selected_piece = None
-                            selected_piece_pos = None
+                            game.cancel_selection()
 
             # Draw the board and all the changes that happened
-            draw_board(screen, board, piece_images, SQUARE_SIZE)
+            draw_board(screen, game.board_manager.board, piece_images, SQUARE_SIZE)
 
             # Keeps the piece image in the center of mouse cursor
-            if selected_piece is not None:
+            if game.game_state.has_selected_piece():
                 try:
-                    img = piece_images[selected_piece]
+                    img = piece_images[game.game_state.get_selected_piece()]
                     x_offset = img.get_width() // 2
                     y_offset = img.get_height() // 2
                     screen.blit(img, (mouse_x - x_offset, mouse_y - y_offset))
                 except KeyError as e:
                     print(f"Missing piece image: {e}")
                     # Reset selected piece to avoid continuous errors
-                    selected_piece = None
-                    selected_piece_pos = None
+                    game.cancel_selection()
 
             pygame.display.flip()
     except Exception as e:
         print("Error: ", e)
     finally:
+        print(f"Move History: {game.game_state.get_move_history()}")
         pygame.quit()
         sys.exit()
 
