@@ -1,36 +1,80 @@
-import engine.valid_moves as valid_moves
+from .board_manager import BoardManager
+from .game_state import GameState
+from .move_validator import MoveValidator
+from .rules_engine import RulesEngine
 
 
-def check_valid(board, selected_piece, selected_piece_pos, dest_piece_pos):
-    # Check within boundaries
-    if (
-        dest_piece_pos[0] < 0
-        or dest_piece_pos[0] > 7
-        or dest_piece_pos[1] < 0
-        or dest_piece_pos[1] > 7
-    ):
+class ChessEngine:
+    """Main chess engine that coordinates all game components"""
+
+    def __init__(self, board=None):
+        """Initialize chess engine with all modular components"""
+        # Initialize core components
+        self.board_manager = BoardManager(board)
+        self.game_state = GameState()
+        self.move_validator = MoveValidator(self.board_manager)
+        self.rules_engine = RulesEngine(self.board_manager, self.move_validator)
+
+        # # Initialize AI components
+        # self.ai = ChessAI(self)
+        # self.position_evaluator = PositionEvaluator(self.board_manager)
+
+    def select_piece(self, row, col):
+        """Select a piece at the given position if it belongs to current player"""
+        piece = self.board_manager.get_piece(row, col)
+
+        if (
+            piece
+            and piece[0] == self.game_state.get_current_player()
+            and self.board_manager.is_position_valid(row, col)
+        ):
+            # Remove piece from board and select it
+            self.board_manager.remove_piece(row, col)
+            self.game_state.select_piece(piece, (row, col))
+            return True
         return False
 
-    if selected_piece[1] == "P":
-        return valid_moves.check_pawn_moves(
-            board, selected_piece, selected_piece_pos, dest_piece_pos
-        )
+    def make_move(self, to_row, to_col):
+        """Attempt to move selected piece to destination"""
+        if not self.game_state.has_selected_piece():
+            return False
 
-    if selected_piece[1] == "R":
-        return valid_moves.check_rook_moves(
-            board, selected_piece, selected_piece_pos, dest_piece_pos
-        )
+        piece = self.game_state.get_selected_piece()
+        from_pos = self.game_state.get_selected_position()
 
-    if selected_piece[1] == "N":
-        return valid_moves.check_knight_moves(selected_piece_pos, dest_piece_pos)
+        if self.move_validator.is_valid_move(piece, from_pos, (to_row, to_col)):
+            # Capture any piece at destination
+            captured_piece = self.board_manager.get_piece(to_row, to_col)
 
-    if selected_piece[1] == "B":
-        return valid_moves.check_bishop_moves(selected_piece_pos, dest_piece_pos)
+            # Make the move
+            self.board_manager.set_piece(to_row, to_col, piece)
 
-    if selected_piece[1] == "Q":
-        return valid_moves.check_queen_moves(selected_piece_pos, dest_piece_pos)
+            # Update game state
+            self.game_state.add_move(from_pos, (to_row, to_col), piece, captured_piece)
+            self.game_state.switch_player()
+            self.game_state.clear_selection()
 
-    if selected_piece[1] == "K":
-        return valid_moves.check_king_moves(selected_piece_pos, dest_piece_pos)
+            return True
+        else:
+            self._return_piece()
+            return False
 
-    return False
+    def cancel_selection(self):
+        """Cancel current piece selection"""
+        self._return_piece()
+
+    def _return_piece(self):
+        """Return selected piece to original position"""
+        if self.game_state.has_selected_piece():
+            piece = self.game_state.get_selected_piece()
+            pos = self.game_state.get_selected_position()
+
+            if pos:
+                self.board_manager.set_piece(pos[0], pos[1], piece)
+
+            self.game_state.clear_selection()
+
+    def reset_game(self):
+        """Reset the game to initial state"""
+        self.board_manager.reset_board()
+        self.game_state.reset_game()
