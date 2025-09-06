@@ -90,4 +90,3 @@ class GameState:
         self.selected_pos = None
         self.move_history = []
         self.game_status = "active"
-

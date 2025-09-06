@@ -1,6 +1,8 @@
-import pygame
 import os
-from src.config import PIECE_COLORS, PIECE_TYPES, PIECES_DIR, COLORS
+
+import pygame
+
+from src.config import COLORS, PIECE_COLORS, PIECE_TYPES, PIECES_DIR
 
 
 def load_piece_images(square_size):

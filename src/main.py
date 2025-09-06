@@ -1,9 +1,10 @@
-import pygame
 import sys
 
-from src.startup import load_piece_images, draw_board, init_pygame
-from src.config import WIDTH, HEIGHT, SQUARE_SIZE, FPS
+import pygame
+
+from src.config import FPS, HEIGHT, SQUARE_SIZE, WIDTH
 from src.engine.chess_engine import ChessEngine
+from src.startup import draw_board, init_pygame, load_piece_images
 
 
 def main():
