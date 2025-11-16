@@ -1,15 +1,21 @@
-[build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
+[tool.poetry]
 name = "chess"
 version = "1.0.0"
 description = "A chess game implementation"
-requires-python = ">=3.13"
-dependencies = [
-    "pygame",
-]
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+package-mode = false
 
-[project.optional-dependencies]
-dev = []
+[tool.poetry.dependencies]
+python = ">=3.13,<4.0"
+pygame = "^2.6.0"
+
+[tool.poetry.group.dev.dependencies]
+
+[tool.pyright]
+include = ["src"]
+extraPaths = ["src"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

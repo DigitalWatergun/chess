@@ -1,4 +1,4 @@
-from src.config import INITIAL_BOARD
+from config import INITIAL_BOARD
 
 
 class BoardManager:

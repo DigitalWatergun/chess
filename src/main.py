@@ -2,21 +2,21 @@ import sys
 
 import pygame
 
-from src.config import FPS, HEIGHT, SQUARE_SIZE, WIDTH
-from src.engine.chess_engine import ChessEngine
-from src.startup import draw_board, init_pygame, load_piece_images
+from config import FPS, HEIGHT, SQUARE_SIZE, WIDTH
+from engine.chess_engine import ChessEngine
 
 
 def main():
+    game = None
     try:
+        # Initialize chess engine instance
+        game = ChessEngine()
+
         # Initialize pygame
-        screen = init_pygame(WIDTH, HEIGHT, "Chess")
+        screen = game.init_pygame(WIDTH, HEIGHT, "Chess")
 
         # Load piece images
-        piece_images = load_piece_images(SQUARE_SIZE)
-
-        # Initialize chess game
-        game = ChessEngine()
+        piece_images = game.load_piece_images(SQUARE_SIZE)
 
         clock = pygame.time.Clock()
         running = True
@@ -49,7 +49,7 @@ def main():
                             game.cancel_selection()
 
             # Draw the board and all the changes that happened
-            draw_board(screen, game.board_manager.board, piece_images, SQUARE_SIZE)
+            game.draw_board(screen, piece_images, SQUARE_SIZE)
 
             # Keeps the piece image in the center of mouse cursor
             if game.game_state.has_selected_piece():
@@ -67,7 +67,8 @@ def main():
     except Exception as e:
         print("Error: ", e)
     finally:
-        print(f"Move History: {game.game_state.get_move_history()}")
+        if game is not None:
+            print(f"Move History: {game.game_state.get_move_history()}")
         pygame.quit()
         sys.exit()
 

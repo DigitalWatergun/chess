@@ -1,4 +1,4 @@
-from src.engine import valid_moves
+from engine import valid_moves
 
 
 class MoveValidator:
