@@ -57,4 +57,3 @@ poetry run python main.py
 ## Why pyenv?
 
 This project uses Python 3.13.9 because pygame 2.6.1 doesn't have pre-built wheels for Python 3.14 yet. Using pyenv ensures everyone is on the same Python version and avoids compilation issues.
-
