@@ -47,6 +47,12 @@ def main():
                         except (IndexError, TypeError, ZeroDivisionError) as e:
                             print(f"Invalid mouse release position: {e}")
                             game.cancel_selection()
+                elif event.type == pygame.KEYDOWN:
+                    if (
+                        pygame.key.get_mods() & pygame.KMOD_CTRL
+                        and event.key == pygame.K_r
+                    ):
+                        game.reset_game()
 
             # Draw the board and all the changes that happened
             game.draw_board(screen, piece_images, SQUARE_SIZE)

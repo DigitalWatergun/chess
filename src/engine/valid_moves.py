@@ -41,8 +41,7 @@ def check_rook_moves(board, selected_piece, selected_piece_pos, dest_piece_pos):
     elif start_row != end_row and start_col == end_col:
         return True
     elif start_row == end_row and start_col != end_col:
-        return True
-
+        return check_valid_row_moves(board, start_row, start_col, end_col)
     return False
 
 
@@ -100,3 +99,12 @@ def check_king_moves(selected_piece_pos, dest_piece_pos):
             return True
 
     return False
+
+
+def check_valid_row_moves(board, start_row, start_col, end_col):
+    step = 1 if start_col < end_col else -1
+    for col in range(start_col, end_col, step):
+        blocking_piece = board[start_row][col]
+        if blocking_piece:
+            return False
+    return True
