@@ -6,19 +6,20 @@ class MoveValidator:
         self.board_manager = board_manager
         self.game_state = game_state
 
-    def is_valid_move(self, piece, from_pos, to_pos):
+    def is_valid_move(self, from_pos, to_pos):
         """Check if a move is valid according to chess rules"""
         # Check within boundaries
         to_row, to_col = to_pos
         if not self.board_manager.is_position_valid(to_row, to_col):
             return False
 
-        piece_type = piece[1]
+        selected_piece = self.game_state.get_selected_piece()
+        piece_type = selected_piece[1]
 
         if piece_type == "P":
-            return self._check_pawn_moves(piece, from_pos, to_pos)
+            return self._check_pawn_moves(selected_piece, from_pos, to_pos)
         elif piece_type == "R":
-            return self._check_rook_moves(piece, from_pos, to_pos)
+            return self._check_rook_moves(selected_piece, from_pos, to_pos)
         elif piece_type == "N":
             return self._check_knight_moves(from_pos, to_pos)
         elif piece_type == "B":
@@ -171,8 +172,7 @@ class MoveValidator:
             row += row_step
             col += col_step
             blocking_piece = self.board_manager.get_piece(row, col)
-            print(row, col, "Blocking Piece: ", blocking_piece)
-            if blocking_piece is not None:
+            if blocking_piece:
                 break
 
         if blocking_piece:
@@ -210,7 +210,7 @@ class MoveValidator:
         for to_row in range(8):
             for to_col in range(8):
                 if (to_row, to_col) != (row, col):  # Don't include current position
-                    if self.is_valid_move(piece, (row, col), (to_row, to_col)):
+                    if self.is_valid_move((row, col), (to_row, to_col)):
                         legal_moves.append((to_row, to_col))
 
         return legal_moves
