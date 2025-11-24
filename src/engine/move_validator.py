@@ -1,6 +1,3 @@
-from engine import valid_moves
-
-
 class MoveValidator:
     """Handles all move validation logic"""
 
@@ -18,21 +15,21 @@ class MoveValidator:
         piece_type = piece[1]
 
         if piece_type == "P":
-            return valid_moves.check_pawn_moves(
+            return self._check_pawn_moves(
                 self.board_manager.board, piece, from_pos, to_pos
             )
         elif piece_type == "R":
-            return valid_moves.check_rook_moves(
+            return self._check_rook_moves(
                 self.board_manager.board, piece, from_pos, to_pos
             )
         elif piece_type == "N":
-            return valid_moves.check_knight_moves(from_pos, to_pos)
+            return self._check_knight_moves(from_pos, to_pos)
         elif piece_type == "B":
-            return valid_moves.check_bishop_moves(from_pos, to_pos)
+            return self._check_bishop_moves(from_pos, to_pos)
         elif piece_type == "Q":
-            return valid_moves.check_queen_moves(from_pos, to_pos)
+            return self._check_queen_moves(from_pos, to_pos)
         elif piece_type == "K":
-            return valid_moves.check_king_moves(from_pos, to_pos)
+            return self._check_king_moves(from_pos, to_pos)
 
         return False
 
@@ -97,3 +94,129 @@ class MoveValidator:
         if target_piece and target_piece[0] != piece[0]:  # Different colors
             return True
         return False
+
+    def _check_pawn_moves(
+        self, board, selected_piece, selected_piece_pos, dest_piece_pos
+    ):
+        start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
+        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+        end_piece = board[end_row][end_col]
+
+        if selected_piece == "wP":
+            direction = -1
+            initial_pos = 6
+        else:
+            direction = 1
+            initial_pos = 1
+
+        col_diff = abs(end_col - start_col)
+        row_diff = end_row - start_row
+
+        # Check if diagonal capture movement
+        if (
+            col_diff == 1
+            and row_diff == direction
+            and end_piece is not None
+            and end_piece != selected_piece
+        ):
+            return True
+        # Check if vertical piece movement
+        elif col_diff == 0 and end_piece is None:
+            if (
+                initial_pos == start_row and end_row == start_row + (2 * direction)
+            ) or (end_row == start_row + direction):
+                return True
+
+        return False
+
+    def _check_rook_moves(
+        self, board, selected_piece, selected_piece_pos, dest_piece_pos
+    ):
+        start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
+        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+        end_piece = board[end_row][end_col]
+
+        if end_piece and end_piece[0] == selected_piece[0]:
+            return False
+        elif start_row != end_row and start_col == end_col:
+            return self._check_blocking_col_pieces(board, start_col, start_row, end_row)
+        elif start_row == end_row and start_col != end_col:
+            return self._check_blocking_row_pieces(board, start_row, start_col, end_col)
+        return False
+
+    def _check_knight_moves(self, selected_piece_pos, dest_piece_pos):
+        start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
+        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+
+        directions = [
+            [-2, 1],
+            [-2, -1],
+            [-1, 2],
+            [-1, -2],
+            [2, 1],
+            [2, -1],
+            [1, -2],
+            [1, 2],
+        ]
+
+        for dr, dc in directions:
+            if start_row + dr == end_row and start_col + dc == end_col:
+                return True
+
+        return False
+
+    def _check_bishop_moves(self, selected_piece_pos, dest_piece_pos):
+        start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
+        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+
+        return abs(end_row - start_row) == abs(end_col - start_col)
+
+    def _check_queen_moves(self, selected_piece_pos, dest_piece_pos):
+        start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
+        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+
+        if (
+            abs(end_row - start_row) == abs(end_col - start_col)
+            or (start_row != end_row and start_col == end_col)
+            or (start_row == end_row and start_col != end_col)
+        ):
+            return True
+
+        return False
+
+    def _check_king_moves(self, selected_piece_pos, dest_piece_pos):
+        start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
+        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+
+        directions = [
+            [0, 1],
+            [0, -1],
+            [1, 0],
+            [-1, 0],
+            [1, 1],
+            [1, -1],
+            [-1, 1],
+            [-1, -1],
+        ]
+
+        for dr, dc in directions:
+            if start_row + dr == end_row and start_col + dc == end_col:
+                return True
+
+        return False
+
+    def _check_blocking_row_pieces(self, board, start_row, start_col, end_col):
+        step = 1 if start_col < end_col else -1
+        for col in range(start_col, end_col, step):
+            blocking_piece = board[start_row][col]
+            if blocking_piece:
+                return False
+        return True
+
+    def _check_blocking_col_pieces(self, board, start_col, start_row, end_row):
+        step = 1 if start_row < end_row else -1
+        for row in range(start_row, end_row, step):
+            blocking_piece = board[row][start_col]
+            if blocking_piece:
+                return False
+        return True
