@@ -15,13 +15,9 @@ class MoveValidator:
         piece_type = piece[1]
 
         if piece_type == "P":
-            return self._check_pawn_moves(
-                self.board_manager.board, piece, from_pos, to_pos
-            )
+            return self._check_pawn_moves(piece, from_pos, to_pos)
         elif piece_type == "R":
-            return self._check_rook_moves(
-                self.board_manager.board, piece, from_pos, to_pos
-            )
+            return self._check_rook_moves(piece, from_pos, to_pos)
         elif piece_type == "N":
             return self._check_knight_moves(from_pos, to_pos)
         elif piece_type == "B":
@@ -95,12 +91,10 @@ class MoveValidator:
             return True
         return False
 
-    def _check_pawn_moves(
-        self, board, selected_piece, selected_piece_pos, dest_piece_pos
-    ):
+    def _check_pawn_moves(self, selected_piece, selected_piece_pos, dest_piece_pos):
         start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
         end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
-        end_piece = board[end_row][end_col]
+        end_piece = self.board_manager.get_piece(end_row, end_col)
 
         if selected_piece == "wP":
             direction = -1
@@ -129,19 +123,17 @@ class MoveValidator:
 
         return False
 
-    def _check_rook_moves(
-        self, board, selected_piece, selected_piece_pos, dest_piece_pos
-    ):
+    def _check_rook_moves(self, selected_piece, selected_piece_pos, dest_piece_pos):
         start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
         end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
-        end_piece = board[end_row][end_col]
+        end_piece = self.board_manager.get_piece(end_row, end_col)
 
         if end_piece and end_piece[0] == selected_piece[0]:
             return False
         elif start_row != end_row and start_col == end_col:
-            return self._check_blocking_col_pieces(board, start_col, start_row, end_row)
+            return self._check_blocking_col_pieces(start_col, start_row, end_row)
         elif start_row == end_row and start_col != end_col:
-            return self._check_blocking_row_pieces(board, start_row, start_col, end_col)
+            return self._check_blocking_row_pieces(start_row, start_col, end_col)
         return False
 
     def _check_knight_moves(self, selected_piece_pos, dest_piece_pos):
@@ -205,18 +197,18 @@ class MoveValidator:
 
         return False
 
-    def _check_blocking_row_pieces(self, board, start_row, start_col, end_col):
+    def _check_blocking_row_pieces(self, start_row, start_col, end_col):
         step = 1 if start_col < end_col else -1
         for col in range(start_col, end_col, step):
-            blocking_piece = board[start_row][col]
+            blocking_piece = self.board_manager.get_piece(start_row, col)
             if blocking_piece:
                 return False
         return True
 
-    def _check_blocking_col_pieces(self, board, start_col, start_row, end_row):
+    def _check_blocking_col_pieces(self, start_col, start_row, end_row):
         step = 1 if start_row < end_row else -1
         for row in range(start_row, end_row, step):
-            blocking_piece = board[row][start_col]
+            blocking_piece = self.board_manager.get_piece(row, start_col)
             if blocking_piece:
                 return False
         return True
