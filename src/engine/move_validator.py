@@ -1,9 +1,10 @@
 class MoveValidator:
     """Handles all move validation logic"""
 
-    def __init__(self, board_manager):
+    def __init__(self, board_manager, game_state):
         """Initialize with reference to board manager"""
         self.board_manager = board_manager
+        self.game_state = game_state
 
     def is_valid_move(self, piece, from_pos, to_pos):
         """Check if a move is valid according to chess rules"""
@@ -21,7 +22,7 @@ class MoveValidator:
         elif piece_type == "N":
             return self._check_knight_moves(from_pos, to_pos)
         elif piece_type == "B":
-            return self._check_bishop_moves(from_pos, to_pos)
+            return self._check_bishop_moves(to_pos)
         elif piece_type == "Q":
             return self._check_queen_moves(from_pos, to_pos)
         elif piece_type == "K":
@@ -95,11 +96,17 @@ class MoveValidator:
 
         return False
 
-    def _check_bishop_moves(self, selected_piece_pos, dest_piece_pos):
+    def _check_bishop_moves(self, dest_piece_pos):
+        selected_piece_pos = self.game_state.get_selected_position()
         start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
         end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
 
-        return abs(end_row - start_row) == abs(end_col - start_col)
+        if abs(end_row - start_row) == abs(end_col - start_col):
+            return self._check_blocking_diag_pieces(
+                start_row, start_col, end_row, end_col
+            )
+
+        return False
 
     def _check_queen_moves(self, selected_piece_pos, dest_piece_pos):
         start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
@@ -149,6 +156,34 @@ class MoveValidator:
             blocking_piece = self.board_manager.get_piece(row, start_col)
             if blocking_piece:
                 return False
+        return True
+
+    def _check_blocking_diag_pieces(self, start_row, start_col, end_row, end_col):
+        start_piece = self.game_state.get_selected_piece()
+        end_piece = self.board_manager.get_piece(end_row, end_col)
+
+        row_step = 1 if start_row < end_row else -1
+        col_step = 1 if start_col < end_col else -1
+        row, col = start_row, start_col
+        blocking_piece = None
+
+        for _ in range(abs(start_row - end_row)):
+            row += row_step
+            col += col_step
+            blocking_piece = self.board_manager.get_piece(row, col)
+            print(row, col, "Blocking Piece: ", blocking_piece)
+            if blocking_piece is not None:
+                break
+
+        if blocking_piece:
+            if (
+                end_piece
+                and blocking_piece == end_piece
+                and start_piece[0] != end_piece[0]
+            ):
+                return True
+            return False
+
         return True
 
     def get_all_legal_moves(self, player_color):

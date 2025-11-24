@@ -17,7 +17,7 @@ class ChessEngine:
         # Initialize core components
         self.board_manager = BoardManager(board)
         self.game_state = GameState()
-        self.move_validator = MoveValidator(self.board_manager)
+        self.move_validator = MoveValidator(self.board_manager, self.game_state)
         self.rules_engine = RulesEngine(self.board_manager, self.move_validator)
 
         # # Initialize AI components
