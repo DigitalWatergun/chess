@@ -30,7 +30,7 @@ class ChessEngine:
 
         if (
             piece
-            and piece[0] == self.game_state.get_current_player()
+            and piece[0] == self.game_state.current_player
             and self.board_manager.is_position_valid(row, col)
         ):
             # Remove piece from board and select it
@@ -41,11 +41,11 @@ class ChessEngine:
 
     def make_move(self, to_row, to_col):
         """Attempt to move selected piece to destination"""
-        if not self.game_state.has_selected_piece():
+        if not self.game_state.selected_piece:
             return False
 
-        piece = self.game_state.get_selected_piece()
-        from_pos = self.game_state.get_selected_position()
+        piece = self.game_state.selected_piece
+        from_pos = self.game_state.selected_pos
         to_pos = (to_row, to_col)
         print(
             f"Selected_piece: {piece} -- Starting Pos: {from_pos} -- Ending Pos {to_pos}"
@@ -65,18 +65,14 @@ class ChessEngine:
 
             return True
         else:
-            self._return_piece()
+            self.cancel_selection()
             return False
 
     def cancel_selection(self):
-        """Cancel current piece selection"""
-        self._return_piece()
-
-    def _return_piece(self):
-        """Return selected piece to original position"""
-        if self.game_state.has_selected_piece():
-            piece = self.game_state.get_selected_piece()
-            pos = self.game_state.get_selected_position()
+        """Cancel current piece selection and return selected piece to original position"""
+        if self.game_state.selected_piece:
+            piece = self.game_state.selected_piece
+            pos = self.game_state.selected_pos
 
             if pos:
                 self.board_manager.set_piece(pos[0], pos[1], piece)

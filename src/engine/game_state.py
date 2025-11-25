@@ -4,16 +4,12 @@ class GameState:
     def __init__(self):
         """Initialize game state"""
         self.current_player = "w"  # 'w' for white, 'b' for black
-        self.selected_piece = None
-        self.selected_pos = None
+        self.selected_piece = ""
+        self.selected_pos = (-1, -1)
         self.move_history = []
         self.game_status = (
             "active"  # 'active', 'check', 'checkmate', 'stalemate', 'draw'
         )
-
-    def get_current_player(self):
-        """Get the current player"""
-        return self.current_player
 
     def switch_player(self):
         """Switch to the other player's turn"""
@@ -31,20 +27,8 @@ class GameState:
 
     def clear_selection(self):
         """Clear current piece selection"""
-        self.selected_piece = None
-        self.selected_pos = None
-
-    def has_selected_piece(self):
-        """Check if a piece is currently selected"""
-        return self.selected_piece is not None
-
-    def get_selected_piece(self):
-        """Get the currently selected piece"""
-        return self.selected_piece
-
-    def get_selected_position(self):
-        """Get the position of the currently selected piece"""
-        return self.selected_pos
+        self.selected_piece = ""
+        self.selected_pos = (-1, -1)
 
     def add_move(self, from_pos, to_pos, piece, captured_piece=None):
         """Add a move to the history"""
@@ -86,7 +70,7 @@ class GameState:
     def reset_game(self):
         """Reset game state to initial conditions"""
         self.current_player = "w"
-        self.selected_piece = None
-        self.selected_pos = None
+        self.selected_piece = ""
+        self.selected_pos = (-1, -1)
         self.move_history = []
         self.game_status = "active"

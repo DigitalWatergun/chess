@@ -40,7 +40,7 @@ def main():
                 elif event.type == pygame.MOUSEMOTION:
                     mouse_x, mouse_y = event.pos
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    if game.game_state.has_selected_piece():
+                    if game.game_state.selected_piece != "":
                         try:
                             row, col = mouse_y // SQUARE_SIZE, mouse_x // SQUARE_SIZE
                             game.make_move(row, col)
@@ -58,9 +58,9 @@ def main():
             game.draw_board(screen, piece_images, SQUARE_SIZE)
 
             # Keeps the piece image in the center of mouse cursor
-            if game.game_state.has_selected_piece():
+            if game.game_state.selected_piece != "":
                 try:
-                    img = piece_images[game.game_state.get_selected_piece()]
+                    img = piece_images[game.game_state.selected_piece]
                     x_offset = img.get_width() // 2
                     y_offset = img.get_height() // 2
                     screen.blit(img, (mouse_x - x_offset, mouse_y - y_offset))
