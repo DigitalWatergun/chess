@@ -6,7 +6,7 @@ class MoveValidator:
         self.board_manager = board_manager
         self.game_state = game_state
 
-    def is_valid_move(self, from_pos, to_pos):
+    def is_valid_move(self, to_pos):
         """Check if a move is valid according to chess rules"""
         # Check within boundaries
         to_row, to_col = to_pos
@@ -17,23 +17,27 @@ class MoveValidator:
         piece_type = selected_piece[1]
 
         if piece_type == "P":
-            return self._check_pawn_moves(selected_piece, from_pos, to_pos)
+            return self._check_pawn_moves(selected_piece, to_pos)
         elif piece_type == "R":
-            return self._check_rook_moves(selected_piece, from_pos, to_pos)
+            return self._check_rook_moves(selected_piece, to_pos)
         elif piece_type == "N":
-            return self._check_knight_moves(from_pos, to_pos)
+            return self._check_knight_moves(to_pos)
         elif piece_type == "B":
             return self._check_bishop_moves(to_pos)
         elif piece_type == "Q":
-            return self._check_queen_moves(from_pos, to_pos)
+            return self._check_queen_moves(to_pos)
         elif piece_type == "K":
-            return self._check_king_moves(from_pos, to_pos)
+            return self._check_king_moves(to_pos)
 
         return False
 
-    def _check_pawn_moves(self, selected_piece, selected_piece_pos, dest_piece_pos):
-        start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
-        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+    def _get_selected_piece_and_pos(self):
+        selected_pos = self.game_state.get_selected_position()
+        return (selected_pos[0], selected_pos[1])
+
+    def _check_pawn_moves(self, selected_piece, to_pos):
+        start_row, start_col = self._get_selected_piece_and_pos()
+        end_row, end_col = to_pos
         end_piece = self.board_manager.get_piece(end_row, end_col)
 
         if selected_piece == "wP":
@@ -63,22 +67,26 @@ class MoveValidator:
 
         return False
 
-    def _check_rook_moves(self, selected_piece, selected_piece_pos, dest_piece_pos):
-        start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
-        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+    def _check_rook_moves(self, selected_piece, to_pos):
+        start_row, start_col = self._get_selected_piece_and_pos()
+        end_row, end_col = to_pos
         end_piece = self.board_manager.get_piece(end_row, end_col)
 
         if end_piece and end_piece[0] == selected_piece[0]:
             return False
         elif start_row != end_row and start_col == end_col:
-            return self._check_blocking_col_pieces(start_col, start_row, end_row)
+            return self._check_blocking_col_pieces(
+                start_col, start_row, end_row, end_col
+            )
         elif start_row == end_row and start_col != end_col:
-            return self._check_blocking_row_pieces(start_row, start_col, end_col)
+            return self._check_blocking_row_pieces(
+                start_row, start_col, end_row, end_col
+            )
         return False
 
-    def _check_knight_moves(self, selected_piece_pos, dest_piece_pos):
-        start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
-        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+    def _check_knight_moves(self, to_pos):
+        start_row, start_col = self._get_selected_piece_and_pos()
+        end_row, end_col = to_pos
 
         directions = [
             [-2, 1],
@@ -97,10 +105,10 @@ class MoveValidator:
 
         return False
 
-    def _check_bishop_moves(self, dest_piece_pos):
+    def _check_bishop_moves(self, to_pos):
         selected_piece_pos = self.game_state.get_selected_position()
         start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
-        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+        end_row, end_col = to_pos
 
         if abs(end_row - start_row) == abs(end_col - start_col):
             return self._check_blocking_diag_pieces(
@@ -109,22 +117,28 @@ class MoveValidator:
 
         return False
 
-    def _check_queen_moves(self, selected_piece_pos, dest_piece_pos):
-        start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
-        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+    def _check_queen_moves(self, to_pos):
+        start_row, start_col = self._get_selected_piece_and_pos()
+        end_row, end_col = to_pos
 
-        if (
-            abs(end_row - start_row) == abs(end_col - start_col)
-            or (start_row != end_row and start_col == end_col)
-            or (start_row == end_row and start_col != end_col)
-        ):
-            return True
+        if start_row != end_row and start_col == end_col:
+            return self._check_blocking_col_pieces(
+                start_col, start_row, end_row, end_col
+            )
+        elif start_row == end_row and start_col != end_col:
+            return self._check_blocking_row_pieces(
+                start_row, start_col, end_row, end_col
+            )
+        elif abs(end_row - start_row) == abs(end_col - start_col):
+            return self._check_blocking_diag_pieces(
+                start_row, start_col, end_row, end_col
+            )
 
         return False
 
-    def _check_king_moves(self, selected_piece_pos, dest_piece_pos):
-        start_row, start_col = selected_piece_pos[0], selected_piece_pos[1]
-        end_row, end_col = dest_piece_pos[0], dest_piece_pos[1]
+    def _check_king_moves(self, to_pos):
+        start_row, start_col = self._get_selected_piece_and_pos()
+        end_row, end_col = to_pos
 
         directions = [
             [0, 1],
@@ -143,19 +157,37 @@ class MoveValidator:
 
         return False
 
-    def _check_blocking_row_pieces(self, start_row, start_col, end_col):
+    def _check_blocking_row_pieces(self, start_row, start_col, end_row, end_col):
         step = 1 if start_col < end_col else -1
-        for col in range(start_col, end_col, step):
+        start_piece = self.game_state.get_selected_piece()
+        end_piece = self.board_manager.get_piece(end_row, end_col)
+
+        for col in range(start_col, end_col + step, step):
             blocking_piece = self.board_manager.get_piece(start_row, col)
             if blocking_piece:
+                if (
+                    end_piece
+                    and blocking_piece == end_piece
+                    and start_piece[0] != end_piece[0]
+                ):
+                    return True
                 return False
         return True
 
-    def _check_blocking_col_pieces(self, start_col, start_row, end_row):
+    def _check_blocking_col_pieces(self, start_col, start_row, end_row, end_col):
         step = 1 if start_row < end_row else -1
-        for row in range(start_row, end_row, step):
+        start_piece = self.game_state.get_selected_piece()
+        end_piece = self.board_manager.get_piece(end_row, end_col)
+
+        for row in range(start_row, end_row + step, step):
             blocking_piece = self.board_manager.get_piece(row, start_col)
             if blocking_piece:
+                if (
+                    end_piece
+                    and blocking_piece == end_piece
+                    and start_piece[0] != end_piece[0]
+                ):
+                    return True
                 return False
         return True
 
