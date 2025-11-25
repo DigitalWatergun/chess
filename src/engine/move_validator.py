@@ -166,6 +166,12 @@ class MoveValidator:
                 if (
                     end_piece
                     and blocking_piece == end_piece
+                    and abs(start_col - end_col) > 1
+                ):
+                    return False
+                elif (
+                    end_piece
+                    and blocking_piece == end_piece
                     and start_piece[0] != end_piece[0]
                 ):
                     return True
