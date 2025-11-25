@@ -19,7 +19,7 @@ class MoveValidator:
         if piece_type == "P":
             return self._check_pawn_moves(selected_piece, to_pos)
         elif piece_type == "R":
-            return self._check_rook_moves(selected_piece, to_pos)
+            return self._check_rook_moves(to_pos)
         elif piece_type == "N":
             return self._check_knight_moves(to_pos)
         elif piece_type == "B":
@@ -67,14 +67,11 @@ class MoveValidator:
 
         return False
 
-    def _check_rook_moves(self, selected_piece, to_pos):
+    def _check_rook_moves(self, to_pos):
         start_row, start_col = self._get_selected_piece_and_pos()
         end_row, end_col = to_pos
-        end_piece = self.board_manager.get_piece(end_row, end_col)
 
-        if end_piece and end_piece[0] == selected_piece[0]:
-            return False
-        elif start_row != end_row and start_col == end_col:
+        if start_row != end_row and start_col == end_col:
             return self._check_blocking_col_pieces(
                 start_col, start_row, end_row, end_col
             )
@@ -164,6 +161,7 @@ class MoveValidator:
 
         for col in range(start_col, end_col + step, step):
             blocking_piece = self.board_manager.get_piece(start_row, col)
+            print(f"Blocking Row Piece: {blocking_piece}, row: {start_row}, col: {col}")
             if blocking_piece:
                 if (
                     end_piece
@@ -181,6 +179,7 @@ class MoveValidator:
 
         for row in range(start_row, end_row + step, step):
             blocking_piece = self.board_manager.get_piece(row, start_col)
+            print(f"Blocking Col Piece: {blocking_piece}, row: {row}, col: {start_col}")
             if blocking_piece:
                 if (
                     end_piece
@@ -242,7 +241,7 @@ class MoveValidator:
         for to_row in range(8):
             for to_col in range(8):
                 if (to_row, to_col) != (row, col):  # Don't include current position
-                    if self.is_valid_move((row, col), (to_row, to_col)):
+                    if self.is_valid_move((to_row, to_col)):
                         legal_moves.append((to_row, to_col))
 
         return legal_moves
