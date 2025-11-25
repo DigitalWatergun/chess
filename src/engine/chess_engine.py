@@ -51,7 +51,7 @@ class ChessEngine:
             f"Selected_piece: {piece} -- Starting Pos: {from_pos} -- Ending Pos {to_pos}"
         )
 
-        if self.move_validator.is_valid_move(to_pos):
+        if from_pos != to_pos and self.move_validator.is_valid_move(to_pos):
             # Capture any piece at destination
             captured_piece = self.board_manager.get_piece(to_row, to_col)
 
