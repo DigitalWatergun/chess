@@ -169,7 +169,6 @@ class MoveValidator:
 
         for col in range(start_col, end_col + step, step):
             blocking_piece = self.board_manager.get_piece(start_row, col)
-            print(f"Blocking Row Piece: {blocking_piece}, row: {start_row}, col: {col}")
             if blocking_piece:
                 if (
                     end_piece
@@ -193,7 +192,6 @@ class MoveValidator:
 
         for row in range(start_row, end_row + step, step):
             blocking_piece = self.board_manager.get_piece(row, start_col)
-            print(f"Blocking Col Piece: {blocking_piece}, row: {row}, col: {start_col}")
             if blocking_piece:
                 if (
                     end_piece
