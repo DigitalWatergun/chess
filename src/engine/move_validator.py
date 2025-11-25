@@ -85,6 +85,7 @@ class MoveValidator:
     def _check_knight_moves(self, to_pos):
         start_row, start_col = self.game_state.selected_pos
         end_row, end_col = to_pos
+        end_piece = self.board_manager.get_piece(end_row, end_col)
 
         directions = [
             [-2, 1],
@@ -99,7 +100,10 @@ class MoveValidator:
 
         for dr, dc in directions:
             if start_row + dr == end_row and start_col + dc == end_col:
-                return True
+                if not end_piece or (
+                    end_piece and end_piece[0] != self.game_state.selected_piece[0]
+                ):
+                    return True
 
         return False
 
@@ -136,6 +140,7 @@ class MoveValidator:
     def _check_king_moves(self, to_pos):
         start_row, start_col = self.game_state.selected_pos
         end_row, end_col = to_pos
+        end_piece = self.board_manager.get_piece(end_row, end_col)
 
         directions = [
             [0, 1],
@@ -150,7 +155,10 @@ class MoveValidator:
 
         for dr, dc in directions:
             if start_row + dr == end_row and start_col + dc == end_col:
-                return True
+                if not end_piece or (
+                    end_piece and end_piece[0] != self.game_state.selected_piece[0]
+                ):
+                    return True
 
         return False
 
