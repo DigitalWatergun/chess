@@ -10,6 +10,10 @@ class GameState:
         self.game_status = (
             "active"  # 'active', 'check', 'checkmate', 'stalemate', 'draw'
         )
+        self.white_kingside_castle = True
+        self.white_queenside_caslte = True
+        self.black_kingside_casle = True
+        self.black_queenside_castle = True
 
     def switch_player(self):
         """Switch to the other player's turn"""
@@ -52,6 +56,23 @@ class GameState:
     def get_move_count(self):
         """Get the total number of moves made"""
         return len(self.move_history)
+
+    def check_castling(self):
+        """Check if the selected piece and player can still castle"""
+        if self.current_player == "w":
+            if (
+                self.white_kingside_castle
+                and self.selected_piece == "wK"
+                or (self.selected_piece == "wR" and self.selected_pos == (7, 7))
+            ):
+                self.white_kingside_castle = False
+
+            if (
+                self.white_queenside_caslte
+                and self.selected_piece == "wK"
+                or (self.selected_piece == "wR" and self.selected_pos == (0, 7))
+            ):
+                self.white_queenside_castle = False
 
     def set_game_status(self, status):
         """Set the game status"""
