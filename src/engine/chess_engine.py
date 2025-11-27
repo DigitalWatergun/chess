@@ -52,14 +52,17 @@ class ChessEngine:
         )
 
         if from_pos != to_pos and self.move_validator.is_valid_move(to_pos):
-            # Check if it was a castle
-            if self.game_state.check_castling():
-                # TODO: Have board manager perform the castling for both players the update the castling state
-                self.game_state.add_move(from_pos, to_pos, "castle")
-            else:
-                captured_piece = self.board_manager.get_piece(to_row, to_col)
-                self.board_manager.set_piece(to_row, to_col, piece)
-                self.game_state.add_move(from_pos, to_pos, piece, captured_piece)
+            # # Check if it was a castle
+            # if self.game_state.check_castling():
+            #     # TODO: Have board manager perform the castling for both players the update the castling state
+            #     self.game_state.add_move(from_pos, to_pos, "castle")
+            # else:
+            #     captured_piece = self.board_manager.get_piece(to_row, to_col)
+            #     self.board_manager.set_piece(to_row, to_col, piece)
+            #     self.game_state.add_move(from_pos, to_pos, piece, captured_piece)
+            captured_piece = self.board_manager.get_piece(to_row, to_col)
+            self.board_manager.set_piece(to_row, to_col, piece)
+            self.game_state.add_move(from_pos, to_pos, piece, captured_piece)
 
             # Update game state
             self.game_state.switch_player()

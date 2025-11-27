@@ -55,26 +55,11 @@ class GameState:
         """Get the total number of moves made"""
         return len(self.move_history)
 
-    def check_castling(self):
-        """Check if the selected piece and player can still castle"""
+    def can_castle(self):
         if self.current_player == "w" and self.white_castle:
-            if (
-                self.selected_piece == "wK"
-                or (self.selected_piece == "wR" and self.selected_pos == (7, 0))
-            ) or (
-                self.selected_piece == "wK"
-                or (self.selected_piece == "wR" and self.selected_pos == (0, 7))
-            ):
-                return True
+            return True
         elif self.current_player == "b" and self.black_castle:
-            if (
-                self.selected_piece == "bK"
-                or (self.selected_piece == "bR" and self.selected_pos == (0, 7))
-            ) or (
-                self.selected_piece == "bK"
-                or (self.selected_piece == "bR" and self.selected_pos == (0, 0))
-            ):
-                return True
+            return True
 
         return False
 
@@ -99,3 +84,5 @@ class GameState:
         self.selected_pos = (-1, -1)
         self.move_history = []
         self.game_status = "active"
+        self.white_castle = True
+        self.black_castle = True
