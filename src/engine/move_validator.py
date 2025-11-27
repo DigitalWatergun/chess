@@ -77,6 +77,7 @@ class MoveValidator:
                 start_col, start_row, end_row, end_col
             )
         elif start_row == end_row and start_col != end_col:
+            # TODO: If the blocking piece is a king and the king is the endpiece, and the game_state castle is true, return true here
             return self._check_blocking_row_pieces(
                 start_row, start_col, end_row, end_col
             )
