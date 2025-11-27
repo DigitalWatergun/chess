@@ -47,6 +47,7 @@ def main():
                         except (IndexError, TypeError, ZeroDivisionError) as e:
                             print(f"Invalid mouse release position: {e}")
                             game.cancel_selection()
+                # Resets the game with a hotkey
                 elif event.type == pygame.KEYDOWN:
                     if (
                         pygame.key.get_mods() & pygame.KMOD_CTRL
