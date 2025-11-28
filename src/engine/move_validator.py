@@ -143,7 +143,15 @@ class MoveValidator:
         end_row, end_col = to_pos
         end_piece = self.board_manager.get_piece(end_row, end_col)
 
-        # if end_piece and end_piece[1] == "R" and self.game_state.can_castle():
+        # Check if this is a castle move
+        if (
+            self.game_state.can_castle()
+            and end_piece == self.game_state.current_player + "R"
+            and self._check_blocking_castle_pieces(
+                start_row, start_col, end_col, end_piece
+            )
+        ):
+            return True
 
         directions = [
             [0, 1],
@@ -156,6 +164,7 @@ class MoveValidator:
             [-1, -1],
         ]
 
+        # Check if all other moves are valid
         for dr, dc in directions:
             if start_row + dr == end_row and start_col + dc == end_col:
                 if not end_piece or (
@@ -165,8 +174,15 @@ class MoveValidator:
 
         return False
 
-    def _check_blocking_castle_pieces(self, start_row, start_col, end_row, end_col):
-        pass
+    def _check_blocking_castle_pieces(self, start_row, start_col, end_col, end_piece):
+        step = 1 if start_col < end_col else -1
+
+        for col in range(start_col, end_col + step, step):
+            blocking_piece = self.board_manager.get_piece(start_row, col)
+            if blocking_piece:
+                if blocking_piece == end_piece:
+                    return True
+                return False
 
     def _check_blocking_row_pieces(self, start_row, start_col, end_row, end_col):
         step = 1 if start_col < end_col else -1

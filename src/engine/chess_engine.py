@@ -52,15 +52,23 @@ class ChessEngine:
         )
 
         if from_pos != to_pos and self.move_validator.is_valid_move(to_pos):
-            # # Check if it was a castle
-            # if self.game_state.check_castling():
-            #     # TODO: Have board manager perform the castling for both players the update the castling state
-            #     self.game_state.add_move(from_pos, to_pos, "castle")
-            # else:
-            #     captured_piece = self.board_manager.get_piece(to_row, to_col)
-            #     self.board_manager.set_piece(to_row, to_col, piece)
-            #     self.game_state.add_move(from_pos, to_pos, piece, captured_piece)
+            # Update castle state
+            if self.game_state.can_castle() and piece[1] == "K" or piece[1] == "R":
+                self.game_state.set_castle()
+
             captured_piece = self.board_manager.get_piece(to_row, to_col)
+
+            # Determine if this is a castle move and make the move
+            if piece[1] == "K" and captured_piece and captured_piece[1] == "R":
+                self.board_manager.handle_castle(piece, from_pos, to_pos)
+                self.game_state.add_move(from_pos, to_pos, "castle")
+
+                # Update game state
+                self.game_state.switch_player()
+                self.game_state.clear_selection()
+                return True
+
+            # Make the move
             self.board_manager.set_piece(to_row, to_col, piece)
             self.game_state.add_move(from_pos, to_pos, piece, captured_piece)
 

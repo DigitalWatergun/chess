@@ -38,6 +38,18 @@ class BoardManager:
             return True
         return False
 
+    def handle_castle(self, king, from_pos, to_pos):
+        from_row, from_col = from_pos
+        to_row, to_col = to_pos
+
+        rook = self.remove_piece(to_row, to_col)
+        if abs(from_col - to_col) == 4:
+            self.set_piece(from_row, from_col - 2, king)
+            self.set_piece(to_row, to_col + 3, rook)
+        elif abs(from_col - to_col) == 3:
+            self.set_piece(from_row, from_col + 2, king)
+            self.set_piece(to_row, from_col + 1, rook)
+
     def is_position_valid(self, row, col):
         """Check if position is within board boundaries"""
         return 0 <= row < 8 and 0 <= col < 8

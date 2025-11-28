@@ -63,6 +63,12 @@ class GameState:
 
         return False
 
+    def set_castle(self):
+        if self.current_player == "w":
+            self.white_castle = False
+        elif self.current_player == "b":
+            self.black_castle = False
+
     def set_game_status(self, status):
         """Set the game status"""
         valid_statuses = ["active", "check", "checkmate", "stalemate", "draw"]
