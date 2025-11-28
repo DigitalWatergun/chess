@@ -44,38 +44,38 @@ class ChessEngine:
         if not self.game_state.selected_piece:
             return False
 
-        piece = self.game_state.selected_piece
+        selected_piece = self.game_state.selected_piece
         from_pos = self.game_state.selected_pos
         to_pos = (to_row, to_col)
         print(
-            f"Selected_piece: {piece} -- Starting Pos: {from_pos} -- Ending Pos {to_pos}"
+            f"Selected_piece: {selected_piece} -- Starting Pos: {from_pos} -- Ending Pos {to_pos}"
         )
 
         if from_pos != to_pos and self.move_validator.is_valid_move(to_pos):
             # Update castle state
-            if self.game_state.can_castle() and piece[1] == "K" or piece[1] == "R":
+            if (
+                self.game_state.can_castle()
+                and selected_piece[1] == "K"
+                or selected_piece[1] == "R"
+            ):
                 self.game_state.set_castle()
 
             captured_piece = self.board_manager.get_piece(to_row, to_col)
 
             # Determine if this is a castle move and make the move
-            if piece[1] == "K" and captured_piece and captured_piece[1] == "R":
-                self.board_manager.handle_castle(piece, from_pos, to_pos)
+            if selected_piece[1] == "K" and captured_piece and captured_piece[1] == "R":
+                self.board_manager.handle_castle(selected_piece, from_pos, to_pos)
                 self.game_state.add_move(from_pos, to_pos, "castle")
-
-                # Update game state
-                self.game_state.switch_player()
-                self.game_state.clear_selection()
-                return True
-
-            # Make the move
-            self.board_manager.set_piece(to_row, to_col, piece)
-            self.game_state.add_move(from_pos, to_pos, piece, captured_piece)
+            else:
+                # Make the move
+                self.board_manager.set_piece(to_row, to_col, selected_piece)
+                self.game_state.add_move(
+                    from_pos, to_pos, selected_piece, captured_piece
+                )
 
             # Update game state
             self.game_state.switch_player()
             self.game_state.clear_selection()
-
             return True
         else:
             self.cancel_selection()
