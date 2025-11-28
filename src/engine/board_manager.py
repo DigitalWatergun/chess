@@ -39,6 +39,7 @@ class BoardManager:
         return False
 
     def handle_castle(self, king, from_pos, to_pos):
+        """Place pieces in the castle position"""
         from_row, from_col = from_pos
         to_row, to_col = to_pos
 
