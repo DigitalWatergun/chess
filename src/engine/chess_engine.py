@@ -153,3 +153,29 @@ class ChessEngine:
                         )
                     else:
                         raise KeyError(f"Piece image not found for: {piece}")
+
+    def draw_pawn_promo(self, screen, piece_images, width, height):
+        """Draw the pawn promotion popup"""
+        popup_width, popup_height = 400, 100
+        popup_x, popup_y = (width - popup_width) // 2, (height - popup_height) // 2
+        promo_pieces = ["R", "N", "B", "Q"]
+
+        popup_surface = pygame.Surface((popup_width, popup_height), pygame.SRCALPHA)
+        popup_surface.fill((255, 255, 255, 90))
+        screen.blit(popup_surface, (popup_x, popup_y))
+        rect = pygame.Rect(popup_x, popup_y, popup_width, popup_height)
+
+        pygame.draw.rect(
+            screen,
+            (100, 100, 100),
+            rect,
+            3,
+        )
+
+        for i, piece_type in enumerate(promo_pieces):
+            piece = self.game_state.current_player + piece_type
+
+            screen.blit(
+                piece_images[piece],
+                (popup_x + (i * 100), popup_y),
+            )
