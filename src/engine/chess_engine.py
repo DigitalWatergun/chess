@@ -6,7 +6,6 @@ from config import COLORS, PIECE_COLORS, PIECE_TYPES, PIECES_DIR
 from engine.board_manager import BoardManager
 from engine.game_state import GameState
 from engine.move_validator import MoveValidator
-from engine.rules_engine import RulesEngine
 
 
 class ChessEngine:
@@ -18,14 +17,20 @@ class ChessEngine:
         self.board_manager = BoardManager(board)
         self.game_state = GameState()
         self.move_validator = MoveValidator(self.board_manager, self.game_state)
-        self.rules_engine = RulesEngine(self.board_manager, self.move_validator)
-
-        # # Initialize AI components
-        # self.ai = ChessAI(self)
-        # self.position_evaluator = PositionEvaluator(self.board_manager)
 
     def select_piece(self, row, col):
         """Select a piece at the given position if it belongs to current player"""
+        if self.game_state.pawn_promotion:
+            piece = self.board_manager.get_pawn_promotion_piece(row, col)
+            promo_piece = f"{self.game_state.current_player}{piece}"
+            last_move = self.game_state.get_last_move()
+            if last_move:
+                self.board_manager.set_piece(
+                    last_move["to"][0], last_move["to"][1], promo_piece
+                )
+                self.game_state.pawn_promotion = False
+                self.game_state.switch_player()
+
         piece = self.board_manager.get_piece(row, col)
 
         if (
@@ -36,13 +41,11 @@ class ChessEngine:
             # Remove piece from board and select it
             self.board_manager.remove_piece(row, col)
             self.game_state.select_piece(piece, (row, col))
-            return True
-        return False
 
     def make_move(self, to_row, to_col):
         """Attempt to move selected piece to destination"""
         if not self.game_state.selected_piece:
-            return False
+            return
 
         selected_piece = self.game_state.selected_piece
         from_pos = self.game_state.selected_pos
@@ -72,14 +75,17 @@ class ChessEngine:
                 self.game_state.add_move(
                     from_pos, to_pos, selected_piece, captured_piece
                 )
+                if selected_piece[1] == "P" and (to_row == 0 or to_row == 7):
+                    self.game_state.pawn_promotion = True
+                    self.game_state.clear_selection()
 
             # Update game state
-            self.game_state.switch_player()
-            self.game_state.clear_selection()
-            return True
+            if not self.game_state.pawn_promotion:
+                self.game_state.switch_player()
+                self.game_state.clear_selection()
+
         else:
             self.cancel_selection()
-            return False
 
     def cancel_selection(self):
         """Cancel current piece selection and return selected piece to original position"""

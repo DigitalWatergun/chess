@@ -27,16 +27,13 @@ class BoardManager:
             return piece
         return None
 
-    def move_piece(self, from_pos, to_pos):
-        """Move piece from one position to another"""
-        from_row, from_col = from_pos
-        to_row, to_col = to_pos
+    def is_position_valid(self, row, col):
+        """Check if position is within board boundaries"""
+        return 0 <= row < 8 and 0 <= col < 8
 
-        piece = self.remove_piece(from_row, from_col)
-        if piece:
-            self.set_piece(to_row, to_col, piece)
-            return True
-        return False
+    def reset_board(self):
+        """Reset board to initial starting position"""
+        self.board = [row[:] for row in INITIAL_BOARD]
 
     def handle_castle(self, king, from_pos, to_pos):
         """Place pieces in the castle position"""
@@ -51,28 +48,15 @@ class BoardManager:
             self.set_piece(from_row, from_col + 2, king)
             self.set_piece(to_row, from_col + 1, rook)
 
-    def is_position_valid(self, row, col):
-        """Check if position is within board boundaries"""
-        return 0 <= row < 8 and 0 <= col < 8
+    def get_pawn_promotion_piece(self, row, col):
+        if row not in [3, 4] and col not in [2, 3, 4, 5]:
+            return None
 
-    def is_position_empty(self, row, col):
-        """Check if position is empty"""
-        return self.get_piece(row, col) is None
-
-    def get_board_copy(self):
-        """Return a deep copy of the current board state"""
-        return [row[:] for row in self.board]
-
-    def reset_board(self):
-        """Reset board to initial starting position"""
-        self.board = [row[:] for row in INITIAL_BOARD]
-
-    def get_pieces_for_player(self, player_color):
-        """Get all pieces for a given player ('w' or 'b')"""
-        pieces = []
-        for row in range(8):
-            for col in range(8):
-                piece = self.get_piece(row, col)
-                if piece and piece[0] == player_color:
-                    pieces.append(((row, col), piece))
-        return pieces
+        if col == 2:
+            return "R"
+        elif col == 3:
+            return "N"
+        elif col == 4:
+            return "B"
+        elif col == 5:
+            return "Q"

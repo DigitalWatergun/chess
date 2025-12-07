@@ -58,8 +58,8 @@ def main():
             # Draw the board and all the changes that happened
             game.draw_board(screen, piece_images, SQUARE_SIZE)
 
-            # TODO: Pawn Promotion
-            # game.draw_pawn_promo(screen, piece_images,  WIDTH, HEIGHT)
+            if game.game_state.pawn_promotion:
+                game.draw_pawn_promo(screen, piece_images, WIDTH, HEIGHT)
 
             # Keeps the piece image in the center of mouse cursor
             if game.game_state.selected_piece != "":

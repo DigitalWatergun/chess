@@ -12,6 +12,7 @@ class GameState:
         )
         self.white_castle = True
         self.black_castle = True
+        self.pawn_promotion = False
 
     def switch_player(self):
         """Switch to the other player's turn"""
