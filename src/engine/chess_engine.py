@@ -24,9 +24,14 @@ class ChessEngine:
             piece = self.board_manager.get_pawn_promotion_piece(row, col)
             promo_piece = f"{self.game_state.current_player}{piece}"
             last_move = self.game_state.get_last_move()
+
             if last_move:
+                last_move_pos = (last_move["to"][0], last_move["to"][1])
                 self.board_manager.set_piece(
-                    last_move["to"][0], last_move["to"][1], promo_piece
+                    last_move_pos[0], last_move_pos[1], promo_piece
+                )
+                self.game_state.add_move(
+                    last_move_pos, last_move_pos, promo_piece, "pawn_promotion"
                 )
                 self.game_state.pawn_promotion = False
                 self.game_state.switch_player()
