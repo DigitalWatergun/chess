@@ -36,8 +36,9 @@ class ChessEngine:
                 self.game_state.pawn_promotion = False
                 self.game_state.switch_player()
 
-        piece = self.board_manager.get_piece(row, col)
+            return
 
+        piece = self.board_manager.get_piece(row, col)
         if (
             piece
             and piece[0] == self.game_state.current_player
