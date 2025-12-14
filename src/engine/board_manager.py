@@ -60,3 +60,18 @@ class BoardManager:
             return "B"
         elif col == 5:
             return "Q"
+
+    def get_player_pieces(self, player):
+        player_pieces = []
+        for row in range(8):
+            for col in range(8):
+                if self.board[row][col] and self.board[row][col][0] == player:
+                    player_pieces.append([self.board[row][col], row, col])
+
+        return player_pieces
+
+    def get_player_king_pos(self, player):
+        for row in range(8):
+            for col in range(8):
+                if self.board[row][col] and self.board[row][col] == player + "K":
+                    return (row, col)

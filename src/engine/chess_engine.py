@@ -34,6 +34,8 @@ class ChessEngine:
                     last_move_pos, last_move_pos, promo_piece, "pawn_promotion"
                 )
                 self.game_state.pawn_promotion = False
+                if self.move_validator.is_check_state():
+                    self.game_state.game_status = "check"
                 self.game_state.switch_player()
 
             return
@@ -60,7 +62,7 @@ class ChessEngine:
             f"Selected_piece: {selected_piece} -- Starting Pos: {from_pos} -- Ending Pos {to_pos}"
         )
 
-        if from_pos != to_pos and self.move_validator.is_valid_move(to_pos):
+        if from_pos != to_pos and self.move_validator.is_valid_move(from_pos, to_pos):
             # Update castle state
             if (
                 self.game_state.can_castle()
@@ -87,6 +89,8 @@ class ChessEngine:
 
             # Update game state
             if not self.game_state.pawn_promotion:
+                if self.move_validator.is_check_state():
+                    self.game_state.game_status = "check"
                 self.game_state.switch_player()
                 self.game_state.clear_selection()
 
