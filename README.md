@@ -51,7 +51,7 @@ poetry install
 ## Running the Application
 
 ```bash
-poetry run python main.py
+poetry run python3 src/main.py
 ```
 
 ## Why pyenv?

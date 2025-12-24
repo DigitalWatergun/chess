@@ -8,7 +8,7 @@ class GameState:
         self.selected_pos = (-1, -1)
         self.move_history = []
         self.game_status = (
-            "active"  # 'active', 'check', 'checkmate', 'stalemate', 'draw'
+            "active"  # 'active', 'check_b', 'check_w', 'checkmate', 'stalemate', 'draw'
         )
         self.white_castle = True
         self.black_castle = True

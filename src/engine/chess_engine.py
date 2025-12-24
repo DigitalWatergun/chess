@@ -34,8 +34,12 @@ class ChessEngine:
                     last_move_pos, last_move_pos, promo_piece, "pawn_promotion"
                 )
                 self.game_state.pawn_promotion = False
-                if self.move_validator.is_check_state():
-                    self.game_state.game_status = "check"
+                if self.move_validator.is_check_move(self.game_state.current_player):
+                    self.game_state.game_status = (
+                        "check_b"
+                        if self.game_state.current_player == "w"
+                        else "check_w"
+                    )
                 self.game_state.switch_player()
 
             return
@@ -59,7 +63,7 @@ class ChessEngine:
         from_pos = self.game_state.selected_pos
         to_pos = (to_row, to_col)
         print(
-            f"Selected_piece: {selected_piece} -- Starting Pos: {from_pos} -- Ending Pos {to_pos}"
+            f"\nChessEngine.make_move -- Selected Piece: {selected_piece} -- Starting Pos: {from_pos} -- Ending Pos: {to_pos}"
         )
 
         if from_pos != to_pos and self.move_validator.is_valid_move(from_pos, to_pos):
@@ -73,8 +77,29 @@ class ChessEngine:
 
             captured_piece = self.board_manager.get_piece(to_row, to_col)
 
+            # Check if game is in 'check' state
+            if self.game_state.game_status in ["check_b", "check_w"]:
+                print(
+                    "ChessEngine.make_move: Game state is in check. Game_state: ",
+                    self.game_state.game_status,
+                )
+                self.board_manager.set_piece(to_row, to_col, selected_piece)
+                self.game_state.clear_selection()
+                if self.move_validator.is_remove_check(self.game_state.current_player):
+                    self.game_state.game_status = "active"
+                    self.game_state.add_move(
+                        from_pos, to_pos, selected_piece, captured_piece
+                    )
+                else:
+                    self.board_manager.remove_piece(to_row, to_col)
+                    self.board_manager.set_piece(
+                        from_pos[0], from_pos[1], selected_piece
+                    )
+                    return
             # Determine if this is a castle move and make the move
-            if selected_piece[1] == "K" and captured_piece and captured_piece[1] == "R":
+            elif (
+                selected_piece[1] == "K" and captured_piece and captured_piece[1] == "R"
+            ):
                 self.board_manager.handle_castle(selected_piece, from_pos, to_pos)
                 self.game_state.add_move(from_pos, to_pos, "castle")
             else:
@@ -89,8 +114,12 @@ class ChessEngine:
 
             # Update game state
             if not self.game_state.pawn_promotion:
-                if self.move_validator.is_check_state():
-                    self.game_state.game_status = "check"
+                if self.move_validator.is_check_move(self.game_state.current_player):
+                    self.game_state.game_status = (
+                        "check_b"
+                        if self.game_state.current_player == "w"
+                        else "check_w"
+                    )
                 self.game_state.switch_player()
                 self.game_state.clear_selection()
 
