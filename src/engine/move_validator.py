@@ -39,9 +39,9 @@ class MoveValidator:
 
     def is_check_move(self, current_player):
         opposite_player = "b" if current_player == "w" else "w"
-        player_pieces = self.board_manager.get_player_pieces(current_player)
+        current_player_pieces = self.board_manager.get_player_pieces(current_player)
         opposite_player_king = self.board_manager.get_player_king_pos(opposite_player)
-        for player_piece in player_pieces:
+        for player_piece in current_player_pieces:
             start_pos = (player_piece[1], player_piece[2])
             valid_move = self.is_valid_move(start_pos, opposite_player_king)
             if valid_move:
@@ -57,6 +57,7 @@ class MoveValidator:
             start_pos = (player_piece[1], player_piece[2])
             valid_move = self.is_valid_move(start_pos, current_player_king)
             if valid_move:
+                print("MoveValidator.is_remove_check -- Opposite player can check you")
                 return False
 
         return True

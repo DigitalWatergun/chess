@@ -104,13 +104,23 @@ class ChessEngine:
                 self.game_state.add_move(from_pos, to_pos, "castle")
             # Make the move
             else:
+                # Check if the move will leave current_player in 'check' state
                 self.board_manager.set_piece(to_row, to_col, selected_piece)
+                self.game_state.clear_selection()
+                if not self.move_validator.is_remove_check(
+                    self.game_state.current_player
+                ):
+                    self.board_manager.remove_piece(to_row, to_col)
+                    self.board_manager.set_piece(
+                        from_pos[0], from_pos[1], selected_piece
+                    )
+                    return
+
                 self.game_state.add_move(
                     from_pos, to_pos, selected_piece, captured_piece
                 )
                 if selected_piece[1] == "P" and (to_row == 0 or to_row == 7):
                     self.game_state.pawn_promotion = True
-                    self.game_state.clear_selection()
 
             # Update game state
             if not self.game_state.pawn_promotion:
