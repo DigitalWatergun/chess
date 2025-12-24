@@ -102,8 +102,8 @@ class ChessEngine:
             ):
                 self.board_manager.handle_castle(selected_piece, from_pos, to_pos)
                 self.game_state.add_move(from_pos, to_pos, "castle")
+            # Make the move
             else:
-                # Make the move
                 self.board_manager.set_piece(to_row, to_col, selected_piece)
                 self.game_state.add_move(
                     from_pos, to_pos, selected_piece, captured_piece
