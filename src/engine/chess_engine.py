@@ -67,14 +67,6 @@ class ChessEngine:
         )
 
         if from_pos != to_pos and self.move_validator.is_valid_move(from_pos, to_pos):
-            # Update castle state
-            if (
-                self.game_state.can_castle()
-                and selected_piece[1] == "K"
-                or selected_piece[1] == "R"
-            ):
-                self.game_state.set_castle()
-
             captured_piece = self.board_manager.get_piece(to_row, to_col)
 
             # Check if game is in 'check' state
@@ -83,6 +75,13 @@ class ChessEngine:
                     "ChessEngine.make_move: Game state is in check. Game_state: ",
                     self.game_state.game_status,
                 )
+                if (
+                    selected_piece[1] == "K"
+                    and captured_piece
+                    and captured_piece[1] == "R"
+                ):
+                    self.cancel_selection()
+                    return
                 self.board_manager.set_piece(to_row, to_col, selected_piece)
                 self.game_state.clear_selection()
                 if self.move_validator.is_remove_check(self.game_state.current_player):
@@ -130,9 +129,17 @@ class ChessEngine:
                         if self.game_state.current_player == "w"
                         else "check_w"
                     )
+
+                # Update castle state
+                if (
+                    self.game_state.can_castle()
+                    and selected_piece[1] == "K"
+                    or selected_piece[1] == "R"
+                ):
+                    self.game_state.set_castle()
+
                 self.game_state.switch_player()
                 self.game_state.clear_selection()
-
         else:
             self.cancel_selection()
 
