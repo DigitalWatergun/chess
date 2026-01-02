@@ -6,6 +6,8 @@ class GameState:
         self.current_player = "w"  # 'w' for white, 'b' for black
         self.selected_piece = ""
         self.selected_pos = (-1, -1)
+        self.captured_piece = ""
+        self.captured_pos = (-1, -1)
         self.move_history = []
         self.game_status = (
             "active"  # 'active', 'check_b', 'check_w', 'checkmate', 'stalemate', 'draw'
@@ -23,15 +25,25 @@ class GameState:
         if player in ["w", "b"]:
             self.current_player = player
 
-    def select_piece(self, piece, position):
+    def set_select_piece(self, piece, position):
         """Select a piece for movement"""
         self.selected_piece = piece
         self.selected_pos = position
+
+    def set_capture_piece(self, piece, position):
+        """Set a piece in the captured_piece and captured_pos if it exists"""
+        self.captured_piece = piece
+        self.captured_pos = position
 
     def clear_selection(self):
         """Clear current piece selection"""
         self.selected_piece = ""
         self.selected_pos = (-1, -1)
+
+    def clear_captured(self):
+        """Clear current captured piece"""
+        self.captured_piece = ""
+        self.captured_pos = (-1, -1)
 
     def add_move(self, from_pos, to_pos, piece, captured_piece=None):
         """Add a move to the history"""
@@ -89,6 +101,8 @@ class GameState:
         self.current_player = "w"
         self.selected_piece = ""
         self.selected_pos = (-1, -1)
+        self.captured_piece = ""
+        self.captured_pos = (-1, -1)
         self.move_history = []
         self.game_status = "active"
         self.white_castle = True

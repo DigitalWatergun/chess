@@ -12,7 +12,7 @@ class BoardManager:
         """Get piece at given position"""
         if 0 <= row < 8 and 0 <= col < 8:
             return self.board[row][col]
-        return None
+        return ""
 
     def set_piece(self, row, col, piece):
         """Place piece at given position"""

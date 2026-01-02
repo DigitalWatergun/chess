@@ -52,23 +52,26 @@ class ChessEngine:
         ):
             # Remove piece from board and select it
             self.board_manager.remove_piece(row, col)
-            self.game_state.select_piece(piece, (row, col))
+            self.game_state.set_select_piece(piece, (row, col))
 
     def make_move(self, to_row, to_col):
         """Attempt to move selected piece to destination"""
         if not self.game_state.selected_piece:
             return
 
+        self.game_state.set_capture_piece(
+            self.board_manager.get_piece(to_row, to_col), (to_row, to_col)
+        )
+
         selected_piece = self.game_state.selected_piece
+        captured_piece = self.game_state.captured_piece
         from_pos = self.game_state.selected_pos
-        to_pos = (to_row, to_col)
+        to_pos = self.game_state.captured_pos
         print(
-            f"\nChessEngine.make_move -- Selected Piece: {selected_piece} -- Starting Pos: {from_pos} -- Ending Pos: {to_pos}"
+            f"\nChessEngine.make_move -- Selected Piece: {selected_piece} -- Starting Pos: {from_pos} -- Ending Piece: {captured_piece} -- Ending Pos: {to_pos}"
         )
 
         if from_pos != to_pos and self.move_validator.is_valid_move(from_pos, to_pos):
-            captured_piece = self.board_manager.get_piece(to_row, to_col)
-
             # Check if game is in 'check' state
             if self.game_state.game_status in ["check_b", "check_w"]:
                 print(
@@ -94,6 +97,7 @@ class ChessEngine:
                     self.board_manager.set_piece(
                         from_pos[0], from_pos[1], selected_piece
                     )
+                    self.board_manager.set_piece(to_pos[0], to_pos[1], captured_piece)
                     return
             # Determine if this is a castle move and make the move
             elif (
@@ -140,6 +144,7 @@ class ChessEngine:
 
                 self.game_state.switch_player()
                 self.game_state.clear_selection()
+                self.game_state.clear_captured()
         else:
             self.cancel_selection()
 
@@ -153,6 +158,7 @@ class ChessEngine:
                 self.board_manager.set_piece(pos[0], pos[1], piece)
 
             self.game_state.clear_selection()
+            self.game_state.clear_captured()
 
     def reset_game(self):
         """Reset the game to initial state"""
