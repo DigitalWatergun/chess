@@ -117,6 +117,7 @@ class ChessEngine:
                     self.board_manager.set_piece(
                         from_pos[0], from_pos[1], selected_piece
                     )
+                    self.board_manager.set_piece(to_pos[0], to_pos[1], captured_piece)
                     return
 
                 self.game_state.add_move(
