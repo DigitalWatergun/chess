@@ -134,6 +134,17 @@ class ChessEngine:
                         if self.game_state.current_player == "w"
                         else "check_w"
                     )
+                    # Check for checkmates
+                    valid_moves = self.move_validator.get_all_valid_moves(
+                        "b" if self.game_state.current_player == "w" else "w"
+                    )
+                    print("Valid Moves: ", valid_moves)
+                    if len(valid_moves) == 0:
+                        print(
+                            f"Checkmate! Current player: {self.game_state.current_player} wins"
+                        )
+                        self.game_state.game_status = "complete"
+                        return
 
                 # Update castle state
                 if (
@@ -146,6 +157,7 @@ class ChessEngine:
                 self.game_state.switch_player()
                 self.game_state.clear_selection()
                 self.game_state.clear_captured()
+
         else:
             self.cancel_selection()
 
@@ -248,3 +260,41 @@ class ChessEngine:
                 piece_images[piece],
                 (popup_x + (i * 100), popup_y),
             )
+
+    def draw_winner(self, screen, piece_images, width, height):
+        popup_width, popup_height = 400, 150
+        popup_x, popup_y = (width - popup_width) // 2, (height - popup_height) // 2
+
+        # Draw the background popup rectangle
+        popup_surface = pygame.Surface((popup_width, popup_height), pygame.SRCALPHA)
+        popup_surface.fill((255, 255, 255, 230))
+        screen.blit(popup_surface, (popup_x, popup_y))
+        rect = pygame.Rect(popup_x, popup_y, popup_width, popup_height)
+
+        # Draw the border of the popup
+        pygame.draw.rect(
+            screen,
+            (100, 100, 100),
+            rect,
+            3,
+        )
+
+        # Get the king image
+        king_image = piece_images[f"{self.game_state.current_player}K"]
+        king_width = king_image.get_width()
+        king_height = king_image.get_height()
+
+        # Center the king image vertically in popup, position it left of center
+        king_x = popup_x + (popup_width // 2) - 80
+        king_y = popup_y + (popup_height - king_height) // 2
+        screen.blit(king_image, (king_x, king_y))
+
+        # Create and render the "WINS!" text
+        font = pygame.font.Font(None, 48)
+        text_color = (0, 0, 0)
+        text_surface = font.render("WINS!", True, text_color)
+
+        # Position text to the right of the king
+        text_x = king_x + king_width + 20
+        text_y = popup_y + (popup_height - text_surface.get_height()) // 2
+        screen.blit(text_surface, (text_x, text_y))

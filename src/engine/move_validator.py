@@ -20,20 +20,20 @@ class MoveValidator:
             start_piece = self.game_state.selected_piece
         else:
             start_piece = self.board_manager.get_piece(from_pos[0], from_pos[1])
-        piece_type = start_piece[1] if start_piece else None
+        piece_type = start_piece[1] if start_piece else ""
 
         if piece_type == "P":
             return self._check_pawn_moves(start_piece, from_pos, to_pos)
         elif piece_type == "R":
             return self._check_rook_moves(from_pos, to_pos)
         elif piece_type == "N":
-            return self._check_knight_moves(from_pos, to_pos)
+            return self._check_knight_moves(start_piece, from_pos, to_pos)
         elif piece_type == "B":
             return self._check_bishop_moves(from_pos, to_pos)
         elif piece_type == "Q":
             return self._check_queen_moves(from_pos, to_pos)
         elif piece_type == "K":
-            return self._check_king_moves(from_pos, to_pos)
+            return self._check_king_moves(start_piece, from_pos, to_pos)
 
         return False
 
@@ -61,6 +61,39 @@ class MoveValidator:
                 return False
 
         return True
+
+    def get_all_valid_moves(self, player):
+        player_pieces = self.board_manager.get_player_pieces(player)
+        valid_moves = []
+        for player_piece in player_pieces:
+            start_pos = (player_piece[1], player_piece[2])
+            for end_row in range(8):
+                for end_col in range(8):
+                    end_pos = (end_row, end_col)
+                    if start_pos != end_pos and self.is_valid_move(start_pos, end_pos):
+                        piece = self.board_manager.get_piece(start_pos[0], start_pos[1])
+                        captured = self.board_manager.get_piece(end_pos[0], end_pos[1])
+
+                        self.board_manager.remove_piece(start_pos[0], start_pos[1])
+                        self.board_manager.set_piece(end_pos[0], end_pos[1], piece)
+
+                        safe = self.is_remove_check(player)
+
+                        self.board_manager.remove_piece(end_pos[0], end_pos[1])
+                        self.board_manager.set_piece(start_pos[0], start_pos[1], piece)
+                        if captured is not None:
+                            self.board_manager.set_piece(
+                                end_pos[0], end_pos[1], captured
+                            )
+                        else:
+                            self.board_manager.remove_piece(end_pos[0], end_pos[1])
+
+                        if safe:
+                            valid_moves.append(
+                                [player_piece[0], start_pos, (end_row, end_col)]
+                            )
+
+        return valid_moves
 
     def _check_pawn_moves(self, start_piece, from_pos, to_pos):
         start_row, start_col = from_pos
@@ -109,7 +142,7 @@ class MoveValidator:
             )
         return False
 
-    def _check_knight_moves(self, from_pos, to_pos):
+    def _check_knight_moves(self, start_piece, from_pos, to_pos):
         start_row, start_col = from_pos
         end_row, end_col = to_pos
         end_piece = self.board_manager.get_piece(end_row, end_col)
@@ -127,9 +160,7 @@ class MoveValidator:
 
         for dr, dc in directions:
             if start_row + dr == end_row and start_col + dc == end_col:
-                if not end_piece or (
-                    end_piece and end_piece[0] != self.game_state.selected_piece[0]
-                ):
+                if not end_piece or (end_piece and end_piece[0] != start_piece[0]):
                     return True
 
         return False
@@ -164,7 +195,7 @@ class MoveValidator:
 
         return False
 
-    def _check_king_moves(self, from_pos, to_pos):
+    def _check_king_moves(self, start_piece, from_pos, to_pos):
         start_row, start_col = from_pos
         end_row, end_col = to_pos
         end_piece = self.board_manager.get_piece(end_row, end_col)
@@ -193,9 +224,7 @@ class MoveValidator:
         # Check if all other moves are valid
         for dr, dc in directions:
             if start_row + dr == end_row and start_col + dc == end_col:
-                if not end_piece or (
-                    end_piece and end_piece[0] != self.game_state.selected_piece[0]
-                ):
+                if not end_piece or (end_piece and end_piece[0] != start_piece[0]):
                     return True
 
         return False

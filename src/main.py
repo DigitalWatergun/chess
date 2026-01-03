@@ -1,4 +1,5 @@
 import sys
+import traceback
 
 import pygame
 
@@ -46,6 +47,7 @@ def main():
                             game.make_move(row, col)
                         except (IndexError, TypeError, ZeroDivisionError) as e:
                             print(f"Invalid mouse release position: {e}")
+                            traceback.print_exc()
                             game.cancel_selection()
                 # Resets the game with a hotkey
                 elif event.type == pygame.KEYDOWN:
@@ -60,6 +62,9 @@ def main():
 
             if game.game_state.pawn_promotion:
                 game.draw_pawn_promo(screen, piece_images, WIDTH, HEIGHT)
+
+            if game.game_state.game_status == "complete":
+                game.draw_winner(screen, piece_images, WIDTH, HEIGHT)
 
             # Keeps the piece image in the center of mouse cursor
             if game.game_state.selected_piece != "":
