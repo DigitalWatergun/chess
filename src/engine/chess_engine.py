@@ -128,6 +128,9 @@ class ChessEngine:
 
             # Update game state
             if not self.game_state.pawn_promotion:
+                valid_moves = self.move_validator.get_all_valid_moves(
+                    "b" if self.game_state.current_player == "w" else "w"
+                )
                 if self.move_validator.is_check_move(self.game_state.current_player):
                     self.game_state.game_status = (
                         "check_b"
@@ -135,16 +138,20 @@ class ChessEngine:
                         else "check_w"
                     )
                     # Check for checkmates
-                    valid_moves = self.move_validator.get_all_valid_moves(
-                        "b" if self.game_state.current_player == "w" else "w"
-                    )
-                    print("Valid Moves: ", valid_moves)
                     if len(valid_moves) == 0:
                         print(
                             f"Checkmate! Current player: {self.game_state.current_player} wins"
                         )
                         self.game_state.game_status = "complete"
                         return
+
+                if len(valid_moves) == 0 and self.game_state.game_status not in [
+                    "check_w",
+                    "check_b",
+                ]:
+                    print("Stalemate!")
+                    self.game_state.game_status = "draw"
+                    return
 
                 # Update castle state
                 if (
@@ -296,5 +303,32 @@ class ChessEngine:
 
         # Position text to the right of the king
         text_x = king_x + king_width + 20
+        text_y = popup_y + (popup_height - text_surface.get_height()) // 2
+        screen.blit(text_surface, (text_x, text_y))
+
+    def draw_draw(self, screen, width, height):
+        popup_width, popup_height = 400, 150
+        popup_x, popup_y = (width - popup_width) // 2, (height - popup_height) // 2
+
+        # Draw the background popup rectangle
+        popup_surface = pygame.Surface((popup_width, popup_height), pygame.SRCALPHA)
+        popup_surface.fill((255, 255, 255, 230))
+        screen.blit(popup_surface, (popup_x, popup_y))
+        rect = pygame.Rect(popup_x, popup_y, popup_width, popup_height)
+
+        # Draw the border of the popup
+        pygame.draw.rect(
+            screen,
+            (100, 100, 100),
+            rect,
+            3,
+        )
+
+        # Create and render the "DRAW!" text
+        font = pygame.font.Font(None, 48)
+        text_color = (0, 0, 0)
+        text_surface = font.render("DRAW!", True, text_color)
+
+        text_x = popup_x + 150
         text_y = popup_y + (popup_height - text_surface.get_height()) // 2
         screen.blit(text_surface, (text_x, text_y))

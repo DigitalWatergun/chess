@@ -9,7 +9,9 @@ class GameState:
         self.captured_piece = ""
         self.captured_pos = (-1, -1)
         self.move_history = []
-        self.game_status = "active"  # 'active', 'check_b', 'check_w', 'checkmate', 'stalemate', 'draw', 'complete'
+        self.game_status = (
+            "active"  # 'active', 'check_b', 'check_w', 'checkmate',  'draw', 'complete'
+        )
         self.white_castle = True
         self.black_castle = True
         self.pawn_promotion = False

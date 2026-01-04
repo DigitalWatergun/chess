@@ -66,6 +66,9 @@ def main():
             if game.game_state.game_status == "complete":
                 game.draw_winner(screen, piece_images, WIDTH, HEIGHT)
 
+            if game.game_state.game_status == "draw":
+                game.draw_draw(screen, WIDTH, HEIGHT)
+
             # Keeps the piece image in the center of mouse cursor
             if game.game_state.selected_piece != "":
                 try:
