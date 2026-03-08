@@ -1,59 +1,57 @@
 # Chess
 
-A basic Chess implementation using PyGame.
+A chess engine and game built from scratch with Pygame. Written offline without AI or internet assistance.
+
+## Features
+
+- All standard piece movements (pawn, rook, knight, bishop, queen, king)
+- Check, checkmate, and stalemate detection
+- Castling
+- Pawn promotion
+- Draw detection (fifty-move rule, threefold repetition, insufficient material)
+- Drag-and-drop piece movement
+- Game reset (Ctrl+R)
 
 ## Prerequisites
 
 - Python 3.13 (managed via pyenv)
-- Poetry (for dependency management)
+- Poetry
 
 ## Setup
 
-### 1. Install pyenv (Python version manager)
-
 ```bash
-brew install pyenv
-```
-
-Add pyenv to your shell configuration (`~/.zshrc` for zsh or `~/.bash_profile` for bash):
-
-```bash
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-```
-
-Restart your terminal or run `source ~/.zshrc` to apply the changes.
-
-### 2. Install Python 3.13
-
-```bash
+# Install Python 3.13 via pyenv
 pyenv install 3.13.9
-```
 
-### 3. Set Python version for this project
-
-The project includes a `.python-version` file that automatically activates Python 3.13.9 when you navigate to this directory (if pyenv is configured).
-
-To manually set it:
-
-```bash
-pyenv local 3.13.9
-```
-
-### 4. Install dependencies
-
-```bash
+# Install dependencies
 poetry env use $(pyenv which python)
 poetry install
 ```
 
-## Running the Application
+## Run
 
 ```bash
 poetry run python3 src/main.py
 ```
 
-## Why pyenv?
+## Project Structure
 
-This project uses Python 3.13.9 because pygame 2.6.1 doesn't have pre-built wheels for Python 3.14 yet. Using pyenv ensures everyone is on the same Python version and avoids compilation issues.
+```
+src/
+├── main.py                 # Game loop and Pygame event handling
+├── config.py               # Board layout, colors, constants
+├── assets/pieces/          # Piece images (bK.png, wP.png, etc.)
+└── engine/
+    ├── chess_engine.py     # Game orchestrator + rendering
+    ├── board_manager.py    # Board state and piece operations
+    ├── game_state.py       # Turn tracking, move history, selections
+    ├── move_validator.py   # Move legality and check detection
+    └── rules_engine.py     # Draw condition detection
+```
+
+## Roadmap
+
+- [ ] En passant
+- [ ] Separate rendering from game logic
+- [ ] Player vs AI (minimax with alpha-beta pruning)
+- [ ] Color selection and game management UI
