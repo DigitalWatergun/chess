@@ -20,14 +20,37 @@ PIECE_TYPES = ["K", "Q", "R", "B", "N", "P"]
 ASSETS_DIR = "src/assets"
 PIECES_DIR = f"{ASSETS_DIR}/pieces"
 
+# Starting Player
+START_PLAYER = "w"
+
 # Initial board layout
+# INITIAL_BOARD = [
+#     ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+#     ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
+#     [None, None, None, None, None, None, None, None],
+#     [None, None, None, None, None, None, None, None],
+#     [None, None, None, None, None, None, None, None],
+#     [None, None, None, None, None, None, None, None],
+#     ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
+#     ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
+# ]
+
 INITIAL_BOARD = [
-    ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
-    ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
+    [None, None, "bB", "bK", None, None, None, None],
     [None, None, None, None, None, None, None, None],
     [None, None, None, None, None, None, None, None],
     [None, None, None, None, None, None, None, None],
     [None, None, None, None, None, None, None, None],
-    ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
-    ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
+    [None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+    [None, None, "wB", None, "wK", None, None, None],
 ]
+
+# Initial board position
+INITIAL_BOARD_POSITION = (
+    "".join(
+        "".join(cell if cell is not None else ".." for cell in row)
+        for row in INITIAL_BOARD
+    )
+    + START_PLAYER
+)

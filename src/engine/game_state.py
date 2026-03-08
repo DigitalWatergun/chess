@@ -1,9 +1,12 @@
+from config import START_PLAYER
+
+
 class GameState:
     """Manages game state including turns, selections, and move history"""
 
     def __init__(self):
         """Initialize game state"""
-        self.current_player = "w"  # 'w' for white, 'b' for black
+        self.current_player = START_PLAYER  # 'w' for white, 'b' for black
         self.selected_piece = ""
         self.selected_pos = (-1, -1)
         self.captured_piece = ""

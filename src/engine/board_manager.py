@@ -1,4 +1,4 @@
-from config import INITIAL_BOARD
+from config import INITIAL_BOARD, INITIAL_BOARD_POSITION
 
 
 class BoardManager:
@@ -7,6 +7,7 @@ class BoardManager:
     def __init__(self, board=None):
         """Initialize board with given state or default starting position"""
         self.board = [row[:] for row in (board or INITIAL_BOARD)]
+        self.board_position_history = {INITIAL_BOARD_POSITION: 1}
 
     def get_piece(self, row, col):
         """Get piece at given position"""
@@ -75,3 +76,15 @@ class BoardManager:
             for col in range(8):
                 if self.board[row][col] and self.board[row][col] == player + "K":
                     return (row, col)
+
+    def add_board_position_to_history(self, player):
+        board_key = (
+            "".join(
+                "".join(cell if cell is not None else ".." for cell in row)
+                for row in self.board
+            )
+            + player
+        )
+        self.board_position_history[board_key] = (
+            self.board_position_history.get(board_key, 0) + 1
+        )

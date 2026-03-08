@@ -6,6 +6,7 @@ from config import COLORS, PIECE_COLORS, PIECE_TYPES, PIECES_DIR
 from engine.board_manager import BoardManager
 from engine.game_state import GameState
 from engine.move_validator import MoveValidator
+from engine.rules_engine import RulesEngine
 
 
 class ChessEngine:
@@ -17,6 +18,7 @@ class ChessEngine:
         self.board_manager = BoardManager(board)
         self.game_state = GameState()
         self.move_validator = MoveValidator(self.board_manager, self.game_state)
+        self.rules_engine = RulesEngine(self.board_manager, self.game_state)
 
     def select_piece(self, row, col):
         """Select a piece at the given position if it belongs to current player"""
@@ -78,6 +80,7 @@ class ChessEngine:
                     "ChessEngine.make_move: Game state is in check. Game_state: ",
                     self.game_state.game_status,
                 )
+                # Prevent castling while in check
                 if (
                     selected_piece[1] == "K"
                     and captured_piece
@@ -85,6 +88,7 @@ class ChessEngine:
                 ):
                     self.cancel_selection()
                     return
+                # Place the piece, check if it removes the 'check' state, otherwise, reset
                 self.board_manager.set_piece(to_row, to_col, selected_piece)
                 self.game_state.clear_selection()
                 if self.move_validator.is_remove_check(self.game_state.current_player):
@@ -123,11 +127,13 @@ class ChessEngine:
                 self.game_state.add_move(
                     from_pos, to_pos, selected_piece, captured_piece
                 )
+                # Check if the move is a pawn promotion
                 if selected_piece[1] == "P" and (to_row == 0 or to_row == 7):
                     self.game_state.pawn_promotion = True
 
             # Update game state
             if not self.game_state.pawn_promotion:
+                # Check if the game is in 'check' state
                 valid_moves = self.move_validator.get_all_valid_moves(
                     "b" if self.game_state.current_player == "w" else "w"
                 )
@@ -161,9 +167,22 @@ class ChessEngine:
                 ):
                     self.game_state.set_castle()
 
+                self.board_manager.add_board_position_to_history(
+                    self.game_state.current_player
+                )
                 self.game_state.switch_player()
                 self.game_state.clear_selection()
                 self.game_state.clear_captured()
+
+                # Check draw conditions
+                if (
+                    self.rules_engine.is_fifty_move_draw()
+                    or self.rules_engine.is_threefold_repetition_draw()
+                    or self.rules_engine.is_insufficient_material_draw()
+                ):
+                    print("Draw!")
+                    self.game_state.game_status = "draw"
+                    return
 
         else:
             self.cancel_selection()

@@ -301,16 +301,13 @@ class MoveValidator:
             col += col_step
             blocking_piece = self.board_manager.get_piece(row, col)
             if blocking_piece:
-                break
-
-        if blocking_piece:
-            if (
-                end_piece
-                and blocking_piece == end_piece
-                and start_piece
-                and start_piece[0] != end_piece[0]
-            ):
-                return True
-            return False
+                if (
+                    end_piece
+                    and blocking_piece == end_piece
+                    and start_piece
+                    and start_piece[0] != end_piece[0]
+                ):
+                    return True
+                return False
 
         return True
