@@ -167,3 +167,6 @@ cython_debug/
 
 # Claude settings 
 .claude
+
+# Titan AI index 
+.titan
