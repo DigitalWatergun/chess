@@ -48,10 +48,3 @@ src/
     ├── move_validator.py   # Move legality and check detection
     └── rules_engine.py     # Draw condition detection
 ```
-
-## Roadmap
-
-- [ ] En passant
-- [ ] Separate rendering from game logic
-- [ ] Player vs AI (minimax with alpha-beta pruning)
-- [ ] Color selection and game management UI
